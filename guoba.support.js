@@ -81,16 +81,20 @@ const GROUPS = [
   ['原神推送', [
     { key: 'gsannounceGroup', label: '公告推送群' },
     { key: 'gsinfoGroup', label: '资讯推送群' },
+    { key: 'gsactivityGroup', label: '活动推送群' },
     { key: 'gsActivityPush', label: '活动到期推送群' },
   ]],
   ['星铁推送', [
     { key: 'srannounceGroup', label: '公告推送群' },
     { key: 'srinfoGroup', label: '资讯推送群' },
+    { key: 'sractivityGroup', label: '活动推送群' },
     { key: 'srActivityPush', label: '活动到期推送群' },
   ]],
   ['绝区零推送', [
     { key: 'zzzannounceGroup', label: '公告推送群' },
     { key: 'zzzinfoGroup', label: '资讯推送群' },
+    { key: 'zzzactivityGroup', label: '活动推送群' },
+    { key: 'zzzActivityPush', label: '活动到期推送群' },
   ]],
   ['未定事件簿推送', [
     { key: 'wdannounceGroup', label: '公告推送群' },
@@ -99,6 +103,8 @@ const GROUPS = [
   ['崩坏3推送', [
     { key: 'bbbannounceGroup', label: '公告推送群' },
     { key: 'bbbinfoGroup', label: '资讯推送群' },
+    { key: 'bbbactivityGroup', label: '活动推送群' },
+    { key: 'bbbActivityPush', label: '活动到期推送群' },
   ]],
   ['崩坏学园2推送', [
     { key: 'bbannounceGroup', label: '公告推送群' },

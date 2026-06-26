@@ -21,7 +21,7 @@ export class user extends plugin {
         },
         {
           reg: /^#绑定c(oo)?k(ie)?$/i,
-          fnc: 'bingCk'
+          fnc: 'bindCk'
         },
         {
           reg: '(.*)_MHYUUID(.*)',
@@ -164,11 +164,11 @@ export class user extends plugin {
   }
 
   /** 绑定ck */
-  async bingCk() {
-    let set = gsCfg.getConfig('mys', 'set')
+  async bindCk() {
+    let set = gsCfg.getConfig("mys", "set")
 
     if (!this.e.ck) {
-      await this.reply(`请发送 #扫码登录，使用米游社扫码`)
+      await this.reply(`看伊涅芙手册去`)
       return
     }
 

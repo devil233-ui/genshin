@@ -62,7 +62,7 @@ export default class GachaLog extends base {
 
     if (!await this.checkUrl(param)) return
 
-    this.e.reply(`链接发送成功，UID:${this.uid}数据获取中……`)
+    this.e.reply("链接发送成功，数据获取中……")
 
     // 是否全量更新抽卡记录
     this.fetchFullLog = await this.isFetchFullLog()
@@ -80,9 +80,11 @@ export default class GachaLog extends base {
       }
       if (i <= 1) await common.sleep(500)
     }
-    MakeMsg.push(`UID：${this.uid} 记录获取成功\n`)
     MakeMsg.push(tmpMsg)
-    MakeMsg.push(`\n UID：${this.uid} 抽卡记录更新完成，您还可回复\n【${this?.e?.isSr ? "*" : "#"}全部记录】统计全部抽卡数据\n【${this?.e?.isSr ? "*光锥" : "#武器"}记录】统计${this?.e?.isSr ? "星铁光锥" : "武器"}池数据\n【${this?.e?.isSr ? "*" : "#"}角色统计】按卡池统计数据\n【${this?.e?.isSr ? "*" : "#"}导出记录】导出记录数据\n\n【#设置全量更新抽卡记录开】用于修复在官方记录有效期内可能发生的数据错误(如出金抽数大于90)`)
+    const isSr = this.e.isSr
+    const p = isSr ? "*" : "#"
+    const game = isSr ? "崩铁" : "原神"
+    MakeMsg.push(`\nUID：${this.uid}抽卡记录更新完成，您还可回复以下（注：除【全部】和【导出】指令外，前缀后均可加【常驻】或【联动】）\n\n【${p}全部记录】统计${game}全部抽卡数据\n【${p}全部统计】卡池命座精炼数分布一览\n【${p}角色记录】统计${game}角色数据（算垫的）\n【${p}武器记录】统计${game}武器数据（算垫的）\n【${p}角色统计】按卡池统计${game}角色数据（不算垫的）\n【${p}武器统计】按卡池统计${game}武器数据（不算垫的）\n【${p}导出记录】导出记录数据\n【#设置全量更新抽卡记录开】用于修复在官方记录有效期内可能发生的数据错误(如出金抽数大于90)`)
     await this.e.reply(MakeMsg)
 
     if (this.fetchFullLog) {

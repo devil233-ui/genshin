@@ -323,9 +323,9 @@ export default class LogCount extends base {
       res.push(pool[i])
       line += Math.ceil(pool[i].roleNum / 6)
 
-      if (this.e.isGroup && line >= 12) {
-        break
-      }
+    //   if (this.e.isGroup && line >= 12) {
+    //     break
+    //   }
     }
 
     // if (line - pool.length <= 0) {
