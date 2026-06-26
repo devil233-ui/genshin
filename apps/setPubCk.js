@@ -7,7 +7,7 @@ import MysInfo from "../model/mys/mysInfo.js"
 import common from "../../../lib/common/common.js"
 
 export class setPubCk extends plugin {
-  constructor (e) {
+  constructor(e) {
     super({
       name: "配置",
       dsc: "#配置ck",
@@ -31,14 +31,14 @@ export class setPubCk extends plugin {
   }
 
   /** 配置公共ck */
-  async setPubCk () {
+  async setPubCk() {
     /** 设置上下文，后续接收到内容会执行doRep方法 */
     this.setContext("pubCk")
     /** 回复 */
     await this.reply("请发送米游社cookie......\n配置后该ck将会加入公共查询池")
   }
 
-  async pubCk () {
+  async pubCk() {
     let msg = this.e.msg
 
     if (!(/(ltoken|ltoken_v2)/.test(this.e.msg) && /(ltuid|ltmid_v2|account_mid_v2)/.test(this.e.msg))) {
@@ -60,7 +60,7 @@ export class setPubCk extends plugin {
 
     this.ck = ""
     lodash.forEach(param, (v, k) => {
-      if (["ltoken", "ltuid", "cookie_token", "account_id", "cookie_token_v2", "account_mid_v2", "ltmid_v2", "ltoken_v2"].includes(k)) {
+      if ([ "ltoken", "ltuid", "cookie_token", "account_id", "cookie_token_v2", "account_mid_v2", "ltmid_v2", "ltoken_v2" ].includes(k)) {
         this.ck += `${k}=${v};`
       }
     })
@@ -106,7 +106,7 @@ export class setPubCk extends plugin {
   }
 
   /** 检查ck是否可用 */
-  async checkCk () {
+  async checkCk() {
     let url = "https://api-takumi.mihoyo.com/binding/api/getUserGameRolesByCookie?game_biz=hk4e_cn"
     let res = await fetch(url, { method: "get", headers: { Cookie: this.ck } })
     if (!res.ok) return false
@@ -120,7 +120,7 @@ export class setPubCk extends plugin {
   }
 
   // 获取米游社通行证id
-  async getUserInfo (server = "mys") {
+  async getUserInfo(server = "mys") {
     try {
       const that = this
       let url = {
@@ -146,12 +146,12 @@ export class setPubCk extends plugin {
     }
   }
 
-  save (data) {
+  save(data) {
     data = YAML.stringify(data)
     fs.writeFileSync(this.file, data)
   }
 
-  async setUserCk () {
+  async setUserCk() {
     let set = "./plugins/genshin/config/mys.set.yaml"
 
     let config = fs.readFileSync(set, "utf8")

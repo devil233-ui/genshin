@@ -1,30 +1,30 @@
-import moment from 'moment'
-import lodash from 'lodash'
-import base from './base.js'
-import MysInfo from './mys/mysInfo.js'
-import { Character } from '#miao.models'
+import moment from "moment"
+import lodash from "lodash"
+import base from "./base.js"
+import MysInfo from "./mys/mysInfo.js"
+import { Character } from "#miao.models"
 
 export default class Abyss extends base {
-  constructor (e) {
+  constructor(e) {
     super(e)
-    this.model = 'abyss'
+    this.model = "abyss"
   }
 
   /** 幻想真境剧诗 */
   async getCombat() {
     let ApiData = {
-      index: '',
-      role_combat: ''
+      index: "",
+      role_combat: ""
     }
 
-    let res = await MysInfo.get(this.e, ApiData, '');
+    let res = await MysInfo.get(this.e, ApiData, "");
   
     /** 同步请求 */
     this.e.apiSync = true;
   
     if (!res || res[0].retcode !== 0 || res[1].retcode !== 0) return false;
   
-    if (res[1].data.has_detail_data === 'false') {
+    if (res[1].data.has_detail_data === "false") {
       await this.e.reply(`uid${this.e.uid}，幻想真境剧诗数据还没更新，请稍后再试`);
       return false;
     }
@@ -50,21 +50,21 @@ export default class Abyss extends base {
     return data;
   }
 
-  async getAbyss () {
+  async getAbyss() {
     let scheduleType = 1
-    if (this.e.msg.includes('上期') || this.e.msg.includes('往期')) {
+    if (this.e.msg.includes("上期") || this.e.msg.includes("往期")) {
       scheduleType = 2
     }
 
     let ApiData = {
-      index: '',
+      index: "",
       spiralAbyss: { schedule_type: scheduleType }
     }
 
     /** 同步请求 */
     this.e.apiSync = true
 
-    let res = await MysInfo.get(this.e, ApiData, '')
+    let res = await MysInfo.get(this.e, ApiData, "")
 
     if (!res || res[0].retcode !== 0 || res[1].retcode !== 0) return false
 
@@ -90,9 +90,9 @@ export default class Abyss extends base {
     return data
   }
 
-  abyssData (data) {
+  abyssData(data) {
     let startTime = moment.unix(data.start_time)
-    let time = Number(startTime.month()) + 1 + '月'
+    let time = Number(startTime.month()) + 1 + "月"
 
     let totalStar = 0
     let star = []
@@ -103,9 +103,9 @@ export default class Abyss extends base {
       totalStar += val.star
       star.push(val.star)
     }
-    totalStar = totalStar + '（' + star.join('-') + '）'
+    totalStar = totalStar + "（" + star.join("-") + "）"
 
-    let dataName = ['damage', 'take_damage', 'defeat', 'normal_skill', 'energy_skill']
+    let dataName = [ "damage", "take_damage", "defeat", "normal_skill", "energy_skill" ]
     let rankData = []
 
     for (let val of dataName) {
@@ -128,7 +128,7 @@ export default class Abyss extends base {
 
       if (rankData[val].num > 1000) {
         rankData[val].num = (rankData[val].num / 10000).toFixed(1)
-        rankData[val].num += ' w'
+        rankData[val].num += " w"
       }
     }
 
@@ -151,14 +151,14 @@ export default class Abyss extends base {
   }
 
   /** 深渊十二层 */
-  async getAbyssFloor () {
-    this.model = 'abyssFloor'
+  async getAbyssFloor() {
+    this.model = "abyssFloor"
     let scheduleType = 1
-    if (this.e.msg.includes('上期') || this.e.msg.includes('往期')) {
+    if (this.e.msg.includes("上期") || this.e.msg.includes("往期")) {
       scheduleType = 2
     }
     let ApiData = {
-      index: '',
+      index: "",
       spiralAbyss: { schedule_type: scheduleType }
     }
 
@@ -175,7 +175,7 @@ export default class Abyss extends base {
     let floorIndex = this.getFloor()
 
     if (!floorIndex) {
-      await this.e.reply('深渊层数错误')
+      await this.e.reply("深渊层数错误")
       return false
     }
 
@@ -184,7 +184,7 @@ export default class Abyss extends base {
       return false
     }
 
-    let floors = lodash.keyBy(resAbyss.floors, 'index')
+    let floors = lodash.keyBy(resAbyss.floors, "index")
 
     if (lodash.isEmpty(floors[floorIndex])) {
       await this.e.reply(`uid:${uid}，暂无第${floorIndex}层数据`)
@@ -200,7 +200,7 @@ export default class Abyss extends base {
     }
   }
 
-  getFloor () {
+  getFloor() {
     let reg = /^#*[上期]*(深渊|深境|深境螺旋)[上期]*[第]*(9|10|11|12|九|十|十一|十二)层[ |0-9]*$/
     let floorIndex = this.e.msg.match(reg)
 
@@ -210,38 +210,38 @@ export default class Abyss extends base {
     floorIndex = floorIndex[2]
 
     switch (floorIndex) {
-      case '9':
-      case '九':
+      case "9":
+      case "九":
         floorIndex = 9
         break
-      case '10':
-      case '十':
+      case "10":
+      case "十":
         floorIndex = 10
         break
-      case '11':
-      case '十一':
+      case "11":
+      case "十一":
         floorIndex = 11
         break
-      case '12':
-      case '十二':
+      case "12":
+      case "十二":
         floorIndex = 12
         break
       default:
-        floorIndex = ''
+        floorIndex = ""
         break
     }
 
     return floorIndex
   }
 
-  abyssFloorData (floor, index) {
-    let roleArr = lodash.keyBy(index.avatars, 'id')
+  abyssFloorData(floor, index) {
+    let roleArr = lodash.keyBy(index.avatars, "id")
     let list = []
     for (let val of floor.levels) {
       if (!val.battles || val.battles.length < 2) {
         continue
       }
-      val.time = moment.unix(val.battles[0].timestamp).format('YYYY-MM-DD HH:mm:ss')
+      val.time = moment.unix(val.battles[0].timestamp).format("YYYY-MM-DD HH:mm:ss")
 
       for (let i in val.battles) {
         for (let j in val.battles[i].avatars) {

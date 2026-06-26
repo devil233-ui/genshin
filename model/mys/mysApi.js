@@ -1,15 +1,15 @@
-import md5 from 'md5'
-import fetch from 'node-fetch'
-import cfg from '../../../../lib/config/config.js'
-import ApiTool from './apiTool.js'
+import md5 from "md5"
+import fetch from "node-fetch"
+import cfg from "../../../../lib/config/config.js"
+import ApiTool from "./apiTool.js"
 
 const game_region = {
-  gs: ['cn_gf01', 'cn_qd01', 'os_usa', 'os_euro', 'os_asia', 'os_cht'],
-  sr: ['prod_gf_cn', 'prod_qd_cn', 'prod_official_usa', 'prod_official_euro', 'prod_official_asia', 'prod_official_cht'],
-  zzz: ['prod_gf_cn', 'prod_gf_cn', 'prod_gf_us', 'prod_gf_eu', 'prod_gf_jp', 'prod_gf_sg']
+  gs: [ "cn_gf01", "cn_qd01", "os_usa", "os_euro", "os_asia", "os_cht" ],
+  sr: [ "prod_gf_cn", "prod_qd_cn", "prod_official_usa", "prod_official_euro", "prod_official_asia", "prod_official_cht" ],
+  zzz: [ "prod_gf_cn", "prod_gf_cn", "prod_gf_us", "prod_gf_eu", "prod_gf_jp", "prod_gf_sg" ]
 }
 
-let HttpsProxyAgent = ''
+let HttpsProxyAgent = ""
 export default class MysApi {
   /**
    * @param uid 游戏uid
@@ -19,10 +19,10 @@ export default class MysApi {
    * @param isSr 是否星铁
    * @param device 设备device_id
    */
-  constructor(uid, cookie, option = { game: 'gs', device: '' }) {
+  constructor(uid, cookie, option = { game: "gs", device: "" }) {
     this.uid = uid
     this.cookie = cookie
-    this.game = option.game || 'gs'
+    this.game = option.game || "gs"
     this.server = this.getServer(uid, this.game)
     this.apiTool = new ApiTool(uid, this.server, this.game)
     /** 5分钟缓存 */
@@ -185,8 +185,8 @@ export default class MysApi {
       'x-rpc-app_version': client.app_version,
       'x-rpc-client_type': client.client_type,
       'User-Agent': client.User_Agent,
-      Referer: client.Referer,
-      DS: this.getDs(query, body)
+      "Referer": client.Referer,
+      "DS": this.getDs(query, body)
     }
   }
 

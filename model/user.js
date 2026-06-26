@@ -15,7 +15,7 @@ import { UserGameDB, sequelize } from "./db/index.js"
 export default class User extends base {
   constructor(e) {
     super(e)
-    this.model = "bindck"
+    this.model = "bindCk"
     /** 绑定的uid */
     this.uidKey = `Yz:genshin:mys:qq-uid:${this.userId}`
 
@@ -120,7 +120,7 @@ export default class User extends base {
 
     logger.mark(`${this.e.logFnc} 保存Cookie成功 [ltuid:${mys.ltuid}]`)
 
-    let uidMsg = ["绑定Cookie成功", mys.getUidInfo()]
+    let uidMsg = [ "绑定Cookie成功", mys.getUidInfo() ]
     //    await this.e.reply(uidMsg.join('\n'))
     let msg = []
     msg.push(uidMsg.join("\n"))
@@ -138,7 +138,11 @@ export default class User extends base {
         "【#原石预估】未来原石数量/抽卡资源",
         "【#更新面板】面板信息",
         "【#深渊】【#剧诗】",
-        "【#更新抽卡记录】"
+        "【#探索度】",
+        "【抽卡帮助】",
+        "更多功能请使用【#帮助】和【#喵喵帮助】",
+        ""
+
       )
       button.push([
         { text: "#uid", callback: "#uid" },
@@ -169,7 +173,11 @@ export default class User extends base {
         "【*星琼预估】未来星琼数量/抽卡资源",
         "【*练度统计】角色列表数据",
         "【*面板】【*更新面板】面板信息",
-        "【*回忆】【*末日】【*虚构】查询三深渊"
+        "【*回忆】【*末日】【*虚构】查询三深渊",
+        "【*探索度】",
+        "【抽卡帮助】",
+        "更多功能请使用【#帮助】和【#喵喵帮助】",
+        ""
       )
       button.push([
         { text: "*uid", callback: "*uid" },
@@ -203,7 +211,11 @@ export default class User extends base {
         "【%更新抽卡记录】仅更新6月内数据",
         "【%抽卡记录】查看抽卡记录",
         "【%防卫战】查询深渊战况",
-        "【%危局】查看危局战况"
+        "【%危局】查看危局战况",
+        "【%探索度】",
+        "【抽卡帮助】",
+        "更多功能请使用【%帮助】",
+        ""
       )
       button.push([
         { text: "%uid", callback: "%uid" },
@@ -265,7 +277,7 @@ export default class User extends base {
         { text: "￥删除ck", callback: "￥删除ck" }
       ])
     }
-    msg = await common.makeForwardMsg(this.e, [[msg.join("\n"), segment.button(...button)]], "绑定成功：使用命令说明")
+    msg = await common.makeForwardMsg(this.e, [ [ msg.join("\n"), segment.button(...button) ] ], "绑定成功：使用命令说明")
     await this.e.reply(msg)
   }
 
@@ -280,7 +292,7 @@ export default class User extends base {
     // 判断是原神还是星铁
     let user = await this.user()
     // 获取当前uid
-    let uidData = user.getUidData("", game = game, this.e)
+    let uidData = user.getUidData("", game, this.e)
     if (!uidData || uidData.type !== "ck" || !uidData.ltuid) {
       return `删除失败：当前的UID${uidData?.uid}无CK信息`
     }
@@ -288,7 +300,7 @@ export default class User extends base {
     if (!mys) {
       return `删除失败：当前的UID${uidData?.uid}无CK信息`
     }
-    let msg = ["绑定Cookie已删除", mys.getUidInfo()]
+    let msg = [ "绑定Cookie已删除", mys.getUidInfo() ]
     await user.delMysUser(uidData.ltuid)
     return msg.join("\n")
   }
@@ -308,16 +320,12 @@ export default class User extends base {
     let game = this.e
     let uidList = user.getUidList(game)
     if (index > uidList.length) {
-      return await this.e.reply(["uid序号输入错误", segment.button([
-        { text: "删除uid", input: "#删除uid" }
-      ])])
+      return await this.e.reply([ "uid序号输入错误", segment.button([ { text: "删除uid", input: "#删除uid" } ]) ])
     }
     index = Number(index) - 1
     let uidObj = uidList[index]
     if (uidObj.type === "ck") {
-      return await this.e.reply(["CK对应UID无法直接删除，请通过【#删除ck】命令来删除", segment.button([
-        { text: "删除ck", callback: "#删除ck" }
-      ])])
+      return await this.e.reply([ "CK对应UID无法直接删除，请通过【#删除ck】命令来删除", segment.button([ { text: "删除ck", callback: "#删除ck" } ]) ])
     }
     await user.delRegUid(uidObj.uid, game)
     return await this.showUid()
@@ -351,7 +359,8 @@ export default class User extends base {
   /** #uid */
   async showUid() {
     let user = await this.user()
-    let uids = [{
+    let uids = [
+{
       key: "gs",
       name: "原神"
     }, {
@@ -360,7 +369,8 @@ export default class User extends base {
     }, {
       key: "zzz",
       name: "绝区零"
-    }]
+    }
+]
     lodash.forEach(uids, (ds) => {
       ds.uidList = user.getUidList(ds.key)
       ds.uid = user.getUid(ds.key)
@@ -380,7 +390,8 @@ export default class User extends base {
         }
       })
     })
-    return this.e.reply([await this.e.runtime.render("genshin", "html/user/uid-list", { uids }, { retType: "base64" }), segment.button([
+    return this.e.reply([
+await this.e.runtime.render("genshin", "html/user/uid-list", { uids }, { retType: "base64" }), segment.button([
       { text: "绑定UID", input: "#绑定uid" },
       { text: "切换UID", input: "#uid" },
       { text: "删除UID", input: "#删除uid" }
@@ -399,7 +410,8 @@ export default class User extends base {
       { text: "七圣", callback: "#七圣召唤查询牌组" },
       { text: "抽卡", callback: "#抽卡记录" },
       { text: "充值", callback: "#充值记录" }
-    ])])
+    ])
+])
   }
 
   /** 切换uid */
@@ -408,9 +420,7 @@ export default class User extends base {
     let game = this.e.game || "gs"
     let uidList = user.getUidList(game)
     if (index > uidList.length) {
-      return await this.e.reply(["uid序号输入错误", segment.button([
-        { text: "切换uid", input: "#uid" }
-      ])])
+      return await this.e.reply([ "uid序号输入错误", segment.button([ { text: "切换uid", input: "#uid" } ]) ])
     }
     index = Number(index) - 1
     user.setMainUid(index, game)
@@ -506,7 +516,7 @@ export default class User extends base {
     await sequelize.query("delete from UserGames where userId is null or data is null", {})
     let games = await UserGameDB.findAll()
     let count = 0
-    await Data.forEach(games, async (game) => {
+    await Data.forEach(games, async(game) => {
       if (!game.userId) {
         game.destroy()
         return true
@@ -605,9 +615,7 @@ export default class User extends base {
   async myCk() {
     let user = await this.user()
     if (!user.hasCk) {
-      this.e.reply(["当前尚未绑定Cookie，请发送  #扫码登录", segment.button([
-        { text: "帮助", input: "#Cookie帮助" }
-      ])])
+      this.e.reply([ "当前尚未绑定Cookie，请发送  #扫码登录", segment.button([ { text: "帮助", input: "#Cookie帮助" } ]) ])
     }
     let mys = user.getMysUser(this.e)
     if (mys) {
@@ -628,7 +636,7 @@ export default class User extends base {
     let checkRet = await user.checkCk()
     let cks = []
     lodash.forEach(checkRet, (ds, idx) => {
-      let tmp = [`\n#${idx + 1}: [CK:${ds.ltuid}] - 【${ds.status === 0 ? "正常" : "失效"}】`]
+      let tmp = [ `\n#${idx + 1}: [CK:${ds.ltuid}] - 【${ds.status === 0 ? "正常" : "失效"}】` ]
       if (ds.uids && ds.uids.length > 0) {
         let dsUids = []
         lodash.forEach(ds.uids, (u) => {
@@ -645,11 +653,13 @@ export default class User extends base {
       cks.push(`当前生效uid：${uid}\n通过【#uid】命令可查看并切换UID`)
     }
 
-    await this.e.reply([cks.join("\n----\n"), segment.button([
+    await this.e.reply([
+cks.join("\n----\n"), segment.button([
       { text: "绑定UID", input: "#绑定uid" },
       { text: "切换UID", input: "#uid" },
       { text: "删除UID", input: "#删除uid" }
-    ])], false, { at: true })
+    ])
+], false, { at: true })
   }
 
   async userAdmin() {
@@ -719,7 +729,8 @@ export default class User extends base {
         }
         let verify = (Math.floor(100000000 + Math.random() * 100000000)).toString()
         await redis.set(`Yz:NoteUser:verify:${mainId}`, verify + "||" + currId, { EX: 300 })
-        e.reply([`此账号将作为子用户，绑定至主用户:${mainId}`,
+        e.reply([
+`此账号将作为子用户，绑定至主用户:${mainId}`,
           "成功绑定后，此用户输入的命令，将视作主用户命令，使用主用户的CK与UID等信息",
           "如需继续绑定，请在5分钟内，使用主账户发送以下命令：", "",
         `#接受绑定子用户[${mainId}][${verify}]`
@@ -752,11 +763,13 @@ export default class User extends base {
         e.reply("当前账户已有绑定的主账户，请使用主账户发起绑定...")
         return true
       }
-      e.reply(["将此账号作为【主用户】，绑定其他子用户。", "",
+      e.reply([
+"将此账号作为【主用户】，绑定其他子用户。", "",
         "可在多个QQ或频道间打通用户信息，子用户会使用主用户的CK与UID等信息",
         "注意：请勿接受不是自己用户的绑定！",
         "请【切换至需要绑定的子用户】并发送以下命令，获得验证命令...", "",
-        `#绑定主用户[${id}]`].join("\n"))
+        `#绑定主用户[${id}]`
+].join("\n"))
     }
   }
 }

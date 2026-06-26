@@ -1,17 +1,17 @@
-import base from './base.js'
-import MysInfo from './mys/mysInfo.js'
+import base from "./base.js"
+import MysInfo from "./mys/mysInfo.js"
 
 export default class Buddy extends base {
-    constructor (e) {
+    constructor(e) {
       super(e)
-      this.model = 'Buddy'
+      this.model = "Buddy"
     }
   
-    async getData () {
-      let device_fp = await MysInfo.get(this.e, 'getFp')
-      let headers = { 'x-rpc-device_fp': device_fp?.data?.device_fp }
+    async getData() {
+      let device_fp = await MysInfo.get(this.e, "getFp")
+      let headers = { "x-rpc-device_fp": device_fp?.data?.device_fp }
       let ApiData = {
-        buddy: ''
+        buddy: ""
       }
       let res = await MysInfo.get(this.e, ApiData, { headers })
 

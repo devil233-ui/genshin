@@ -1,4 +1,4 @@
-import BaseModel from './BaseModel.js'
+import BaseModel from "./BaseModel.js"
 
 const { Types } = BaseModel
 
@@ -12,7 +12,7 @@ const COLUMNS = {
   // MysUser类型，mys / hoyolab
   type: {
     type: Types.STRING,
-    defaultValue: 'mys',
+    defaultValue: "mys",
     notNull: true
   },
 
@@ -21,8 +21,8 @@ const COLUMNS = {
   device: Types.STRING,
   uids: {
     type: Types.STRING,
-    get () {
-      let data = this.getDataValue('uids')
+    get() {
+      let data = this.getDataValue("uids")
       let ret = {}
       try {
         ret = JSON.parse(data)
@@ -31,14 +31,14 @@ const COLUMNS = {
       }
       return ret
     },
-    set (uids) {
-      this.setDataValue('uids', JSON.stringify(uids))
+    set(uids) {
+      this.setDataValue("uids", JSON.stringify(uids))
     }
   }
 }
 
 class MysUserDB extends BaseModel {
-  static async find (ltuid = '', create = false) {
+  static async find(ltuid = "", create = false) {
     // DB查询
     let mys = await MysUserDB.findByPk(ltuid)
     if (!mys && create) {
@@ -49,7 +49,7 @@ class MysUserDB extends BaseModel {
     return mys || false
   }
 
-  async saveDB (mys) {
+  async saveDB(mys) {
     if (!mys.ck || !mys.device || !mys.db) {
       return false
     }

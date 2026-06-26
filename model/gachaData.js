@@ -1,28 +1,28 @@
-import base from './base.js'
-import gsCfg from './gsCfg.js'
-import lodash from 'lodash'
-import moment from 'moment'
-import fetch from 'node-fetch'
-import { Character, Weapon } from '#miao.models'
+import base from "./base.js"
+import gsCfg from "./gsCfg.js"
+import lodash from "lodash"
+import moment from "moment"
+import fetch from "node-fetch"
+import { Character, Weapon } from "#miao.models"
 
 export default class GachaData extends base {
   /**
    * @param e icqq 消息e
    * @param e.user_id 用户id
    */
-  constructor (e) {
+  constructor(e) {
     super(e)
-    this.model = 'gacha'
+    this.model = "gacha"
     /** 卡池 */
     this.pool = {}
     /** 默认设置 */
-    this.def = gsCfg.getdefSet('gacha', 'gacha')
+    this.def = gsCfg.getdefSet("gacha", "gacha")
     this.set = gsCfg.getGachaSet(this.e.group_id)
 
     /** 角色武器类型 */
     this.ele = gsCfg.element
     /** 默认角色池 */
-    this.type = 'role'
+    this.type = "role"
     /** 抽卡结果 */
     this.res = []
 
@@ -30,7 +30,7 @@ export default class GachaData extends base {
     this.fourHave = []
   }
 
-  static async init (e) {
+  static async init(e) {
     let gacha = new GachaData(e)
     /** 抽卡类型 */
     gacha.getTpye()
@@ -42,18 +42,18 @@ export default class GachaData extends base {
     return gacha
   }
 
-  static getImg (name, type = 'role') {
-    if (type === 'role' || type === '角色') {
+  static getImg(name, type = "role") {
+    if (type === "role" || type === "角色") {
       let char = Character.get(name)
-      return char?.imgs?.gacha || ''
-    } else if (type === 'weapon' || type === '武器') {
+      return char?.imgs?.gacha || ""
+    } else if (type === "weapon" || type === "武器") {
       let weapon = Weapon.get(name)
-      return weapon?.imgs?.gacha || ''
+      return weapon?.imgs?.gacha || ""
     }
   }
 
   /** 抽卡 */
-  async run () {
+  async run() {
     let list = this.lottery()
 
     /** 截图数据 */
@@ -68,7 +68,7 @@ export default class GachaData extends base {
     return data
   }
 
-  get key () {
+  get key() {
     /** 群，私聊分开 */
     if (this.e.isGroup) {
       return `${this.prefix}${this.e.group_id}:${this.userId}`
@@ -77,21 +77,21 @@ export default class GachaData extends base {
     }
   }
 
-  getTpye () {
-    if (this.e.msg.includes('2')) this.role2 = true
-    if (this.e.msg.includes('武器')) this.type = 'weapon'
-    if (this.e.msg.includes('常驻')) this.type = 'permanent'
+  getTpye() {
+    if (this.e.msg.includes("2")) this.role2 = true
+    if (this.e.msg.includes("武器")) this.type = "weapon"
+    if (this.e.msg.includes("常驻")) this.type = "permanent"
   }
 
   /** 奖池数据 */
-  async getPool () {
-    let poolArr = gsCfg.getdefSet('gacha', 'pool')
-    poolArr = [...poolArr].reverse()
+  async getPool() {
+    let poolArr = gsCfg.getdefSet("gacha", "pool")
+    poolArr = [ ...poolArr ].reverse()
     /** 获取设置卡池 */
     let NowPool = poolArr.find((val) => new Date().getTime() <= new Date(val.endTime).getTime()) || poolArr.pop()
     this.NowPool = NowPool
 
-    if (this.type == 'weapon') {
+    if (this.type == "weapon") {
       let weapon4 = lodash.difference(this.def.weapon4, NowPool.weapon4)
       let weapon5 = lodash.difference(this.def.weapon5, NowPool.weapon5)
 
@@ -104,7 +104,7 @@ export default class GachaData extends base {
       }
     }
 
-    if (this.type == 'role') {
+    if (this.type == "role") {
       let role4 = lodash.difference(this.def.role4, NowPool.up4)
       let role5 = lodash.difference(this.def.role5, NowPool.up5)
 
@@ -125,7 +125,7 @@ export default class GachaData extends base {
       }
     }
 
-    if (this.type == 'permanent') {
+    if (this.type == "permanent") {
       this.pool = {
         up4: [],
         role4: this.def.role4,
@@ -140,7 +140,7 @@ export default class GachaData extends base {
   }
 
   /** 用户数据 */
-  async userData () {
+  async userData() {
     if (this.user) return this.user
 
     let user = await redis.get(this.key)
@@ -180,12 +180,12 @@ export default class GachaData extends base {
   /**
    * 抽奖
    */
-  lottery (save = true) {
+  lottery(save = true) {
     /** 十连抽 */
     for (let i = 1; i <= 10; i++) {
       this.index = i
 
-      if (this.type == 'weapon') {
+      if (this.type == "weapon") {
         this.user.today.weaponNum++
       } else {
         this.user.today.num++
@@ -201,12 +201,12 @@ export default class GachaData extends base {
     if (save) this.saveUser()
 
     /** 排序 星级，角色，武器 */
-    this.res = lodash.orderBy(this.res, ['star', 'type', 'have', 'index'], ['desc', 'asc', 'asc', 'asc'])
+    this.res = lodash.orderBy(this.res, [ "star", "type", "have", "index" ], [ "desc", "asc", "asc", "asc" ])
 
     return this.res
   }
 
-  lottery5 () {
+  lottery5() {
     /** 是否大保底 */
     let isBigUP = false
     let isBing = false
@@ -233,10 +233,10 @@ export default class GachaData extends base {
       tmpUp = 101
     }
 
-    if (this.type == 'permanent') tmpUp = 0
+    if (this.type == "permanent") tmpUp = 0
 
-    let tmpName = ''
-    if (this.type == 'weapon' && this.user[this.type].lifeNum >= 2) {
+    let tmpName = ""
+    if (this.type == "weapon" && this.user[this.type].lifeNum >= 2) {
       /** 定轨 */
       tmpName = this.getBingWeapon()
       this.user[this.type].lifeNum = 0
@@ -254,13 +254,13 @@ export default class GachaData extends base {
         this.user[this.type].lifeNum = 0
       }
     } else {
-      if (this.type == 'permanent') {
+      if (this.type == "permanent") {
         if (lodash.random(1, 100) <= 50) {
           tmpName = lodash.sample(this.pool.five)
-          type = 'role'
+          type = "role"
         } else {
           tmpName = lodash.sample(this.pool.fiveW)
-          type = 'weapon'
+          type = "weapon"
         }
       } else {
         /** 歪了 大保底+1 */
@@ -292,7 +292,7 @@ export default class GachaData extends base {
       star: 5,
       type,
       num: nowCardNum,
-      element: this.ele[tmpName] || '',
+      element: this.ele[tmpName] || "",
       index: this.index,
       isBigUP,
       isBing,
@@ -304,7 +304,7 @@ export default class GachaData extends base {
     return true
   }
 
-  lottery4 () {
+  lottery4() {
     let tmpChance4 = this.def.chance4
 
     /** 四星保底 */
@@ -326,17 +326,17 @@ export default class GachaData extends base {
 
     /** 四星保底 */
     let tmpUp = 50
-    if (this.type == 'weapon') tmpUp = 75
+    if (this.type == "weapon") tmpUp = 75
 
     if (this.user[this.type].isUp4 == 1) {
       this.user[this.type].isUp4 = 0
       tmpUp = 100
     }
 
-    if (this.type == 'permanent') tmpUp = 0
+    if (this.type == "permanent") tmpUp = 0
 
-    let type = 'role'
-    let tmpName = ''
+    let type = "role"
+    let tmpName = ""
     /** 当祈愿获取到4星物品时，有50%的概率为本期UP角色 */
     if (lodash.random(1, 100) <= tmpUp) {
       /** up 4星 */
@@ -347,10 +347,10 @@ export default class GachaData extends base {
       /** 一半概率武器 一半4星 */
       if (lodash.random(1, 100) <= 50) {
         tmpName = lodash.sample(this.pool.role4)
-        type = 'role'
+        type = "role"
       } else {
         tmpName = lodash.sample(this.pool.weapon4)
-        type = 'weapon'
+        type = "weapon"
       }
     }
 
@@ -366,7 +366,7 @@ export default class GachaData extends base {
       name: tmpName,
       star: 4,
       type,
-      element: this.ele[tmpName] || '',
+      element: this.ele[tmpName] || "",
       index: this.index,
       imgFile: GachaData.getImg(tmpName, type),
       have
@@ -375,25 +375,25 @@ export default class GachaData extends base {
     return true
   }
 
-  lottery3 () {
+  lottery3() {
     /** 随机三星武器 */
     let tmpName = lodash.sample(this.pool.weapon3)
     this.res.push({
       name: tmpName,
       star: 3,
-      type: 'weapon',
-      element: this.ele[tmpName] || '',
+      type: "weapon",
+      element: this.ele[tmpName] || "",
       index: this.index,
-      imgFile: GachaData.getImg(tmpName, 'weapon')
+      imgFile: GachaData.getImg(tmpName, "weapon")
     })
 
     return true
   }
 
-  probability () {
+  probability() {
     let tmpChance5 = this.def.chance5
 
-    if (this.type == 'role' || this.type == 'permanent') {
+    if (this.type == "role" || this.type == "permanent") {
       /** 增加双黄概率 */
       if (this.user.week.num == 1) {
         tmpChance5 *= 2
@@ -411,7 +411,7 @@ export default class GachaData extends base {
       }
     }
 
-    if (this.type == 'weapon') {
+    if (this.type == "weapon") {
       tmpChance5 = this.def.chanceW5
 
       /** 增加双黄概率 */
@@ -437,8 +437,8 @@ export default class GachaData extends base {
   }
 
   /** 获取定轨的武器 */
-  getBingWeapon (sortName = false) {
-    if (this.type != 'weapon') return false
+  getBingWeapon(sortName = false) {
+    if (this.type != "weapon") return false
 
     let name = this.pool.up5[this.user[this.type].type - 1]
 
@@ -447,7 +447,7 @@ export default class GachaData extends base {
     return name
   }
 
-  lotteryInfo () {
+  lotteryInfo() {
     let info = `累计「${this.user[this.type].num5}抽」`
     let nowFive = 0
     let nowFour = 0
@@ -455,16 +455,16 @@ export default class GachaData extends base {
     this.res.forEach((v, i) => {
       if (v.star == 5) {
         nowFive++
-        if (v.type == 'role') {
+        if (v.type == "role") {
           let char = Character.get(v.name)
-          info = char?.abbr || ''
+          info = char?.abbr || ""
         } else {
           let weapon = Weapon.get(v.name)
-          info = weapon.abbr || ''
+          info = weapon.abbr || ""
         }
         info += `「${v.num}抽」`
-        if (v.isBigUP) info += '大保底'
-        if (v.isBing) info += '定轨'
+        if (v.isBigUP) info += "大保底"
+        if (v.isBing) info += "定轨"
       }
       if (v.star == 4) {
         nowFour++
@@ -472,14 +472,14 @@ export default class GachaData extends base {
     })
 
     let poolName = `角色池：${gsCfg.shortName(this.pool.up5[0])}`
-    if (this.type == 'permanent') poolName = '常驻池'
+    if (this.type == "permanent") poolName = "常驻池"
 
     let res = {
       info,
       nowFive,
       nowFour,
       poolName,
-      isWeapon: this.type == 'weapon',
+      isWeapon: this.type == "weapon",
       bingWeapon: this.getBingWeapon(true),
       lifeNum: this.user[this.type]?.lifeNum || 0
     }
@@ -489,27 +489,27 @@ export default class GachaData extends base {
     return res
   }
 
-  async saveUser () {
+  async saveUser() {
     this.user.today.expire = this.getEnd().end4
     await redis.setEx(this.key, 3600 * 24 * 14, JSON.stringify(this.user))
   }
 
-  getNow () {
-    return moment().format('X')
+  getNow() {
+    return moment().format("X")
   }
 
-  getEnd () {
-    let end = moment().endOf('day').format('X')
+  getEnd() {
+    let end = moment().endOf("day").format("X")
     let end4 = 3600 * 4
-    if (moment().format('k') < 4) {
-      end4 += Number(moment().startOf('day').format('X'))
+    if (moment().format("k") < 4) {
+      end4 += Number(moment().startOf("day").format("X"))
     } else {
       end4 += Number(end)
     }
     return { end, end4 }
   }
 
-  getWeekEnd () {
-    return Number(moment().day(7).endOf('day').format('X'))
+  getWeekEnd() {
+    return Number(moment().day(7).endOf("day").format("X"))
   }
 }

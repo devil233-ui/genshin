@@ -1,8 +1,8 @@
-import BaseModel from './BaseModel.js'
-import lodash from 'lodash'
-import { UserGameDB } from './index.js'
-import MysUtil from '../mys/MysUtil.js'
-import MysUserDB from './MysUserDB.js'
+import BaseModel from "./BaseModel.js"
+import lodash from "lodash"
+import { UserGameDB } from "./index.js"
+import MysUtil from "../mys/MysUtil.js"
+import MysUserDB from "./MysUserDB.js"
 
 const { Types } = BaseModel
 
@@ -16,7 +16,7 @@ const COLUMNS = {
 
   type: {
     type: Types.STRING,
-    defaultValue: 'qq',
+    defaultValue: "qq",
     notNull: true
   },
 
@@ -29,8 +29,8 @@ const COLUMNS = {
   ltuids: Types.STRING,
   games: {
     type: Types.STRING,
-    get () {
-      let data = this.getDataValue('games')
+    get() {
+      let data = this.getDataValue("games")
       let ret = {}
       try {
         data = JSON.parse(data) || {}
@@ -40,23 +40,23 @@ const COLUMNS = {
       MysUtil.eachGame((game) => {
         let ds = data[game] || {}
         ret[game] = {
-          uid: ds.uid || '',
+          uid: ds.uid || "",
           data: ds.data || {}
         }
       })
       return ret
     },
-    set (data) {
-      this.setDataValue('games', JSON.stringify(data))
+    set(data) {
+      this.setDataValue("games", JSON.stringify(data))
     }
   },
   data: Types.STRING
 }
 
 class UserDB extends BaseModel {
-  static async find (id, type = 'qq') {
+  static async find(id, type = "qq") {
     // user_id
-    id = type === 'qq' ? '' + id : type + id
+    id = type === "qq" ? "" + id : type + id
     // DB查询
     let user = await UserDB.findByPk(id)
     if (!user) {
@@ -68,7 +68,7 @@ class UserDB extends BaseModel {
     return user
   }
 
-  async saveDB (user) {
+  async saveDB(user) {
     let db = this
     let ltuids = []
     lodash.forEach(user.mysUsers, (mys) => {
@@ -76,7 +76,7 @@ class UserDB extends BaseModel {
         ltuids.push(mys.ltuid)
       }
     })
-    db.ltuids = ltuids.join(',')
+    db.ltuids = ltuids.join(",")
     let games = {}
     lodash.forEach(user._games, (gameDs, game) => {
       games[game] = {

@@ -1,23 +1,23 @@
-import base from './base.js'
-import MysInfo from './mys/mysInfo.js'
-import gsCfg from './gsCfg.js'
-import lodash from 'lodash'
-import { Weapon, Character } from '#miao.models'
+import base from "./base.js"
+import MysInfo from "./mys/mysInfo.js"
+import gsCfg from "./gsCfg.js"
+import lodash from "lodash"
+import { Weapon, Character } from "#miao.models"
 
 export default class WeaponModel extends base {
-  constructor (e) {
+  constructor(e) {
     super(e)
-    this.model = 'weapon'
+    this.model = "weapon"
   }
 
-  static async get (e) {
+  static async get(e) {
     let weapon = new WeaponModel(e)
     return await weapon.getData()
   }
 
   /** #武器 */
-  async getData (e) {
-    let res = await MysInfo.get(this.e, 'character')
+  async getData(e) {
+    let res = await MysInfo.get(this.e, "character")
 
     if (!res || res.retcode !== 0) return false
 
@@ -38,9 +38,9 @@ export default class WeaponModel extends base {
     return data
   }
 
-  dealData (avatars) {
-    let actWeapon = gsCfg.getdefSet('weapon', 'other').actWeapon
-    let sortName = gsCfg.getdefSet('weapon', 'other').sortName
+  dealData(avatars) {
+    let actWeapon = gsCfg.getdefSet("weapon", "other").actWeapon
+    let sortName = gsCfg.getdefSet("weapon", "other").sortName
 
     let ret = []
     let count = {
@@ -110,7 +110,7 @@ export default class WeaponModel extends base {
     }
 
     // 重新排序
-    ret = lodash.chain(ret).orderBy(['firstSort'], ['desc']).orderBy(['sort'], ['desc']).value()
+    ret = lodash.chain(ret).orderBy([ "firstSort" ], [ "desc" ]).orderBy([ "sort" ], [ "desc" ]).value()
 
     return { list: ret, count }
   }

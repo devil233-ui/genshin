@@ -1,17 +1,17 @@
-import base from './base.js'
-import MysInfo from './mys/mysInfo.js'
-import MysApi from './mys/mysApi.js'
-import lodash from 'lodash'
-import gsCfg from './gsCfg.js'
+import base from "./base.js"
+import MysInfo from "./mys/mysInfo.js"
+import MysApi from "./mys/mysApi.js"
+import lodash from "lodash"
+import gsCfg from "./gsCfg.js"
 
 export default class Calculator extends base {
-  constructor (e) {
+  constructor(e) {
     super(e)
-    this.model = 'calculator'
-    this.checkMsg = `设置角色、武器、技能等级有误\n指令：${e.isSr ? '*克拉拉养成\n示例：*克拉拉养成75 80 6 9 9 9\n参数为角色、武器、普攻、战技、终结技、天赋' : '#刻晴养成\n示例：#刻晴养成81 90 9 9 9\n参数为角色、武器、技能等级'}`
+    this.model = "calculator"
+    this.checkMsg = `设置角色、武器、技能等级有误\n指令：${e.isSr ? "*克拉拉养成\n示例：*克拉拉养成75 80 6 9 9 9\n参数为角色、武器、普攻、战技、终结技、天赋" : "#刻晴养成\n示例：#刻晴养成81 90 9 9 9\n参数为角色、武器、技能等级"}`
   }
 
-  async get (role) {
+  async get(role) {
     this.role = role
     /** 获取绑定uid */
     let uid = await MysInfo.getUid(this.e)
@@ -23,13 +23,13 @@ export default class Calculator extends base {
 
     this.mysApi = new MysApi(uid, ck.ck, { log: true })
 
-    let device_fp = await MysInfo.get(this.e, 'getFp')
+    let device_fp = await MysInfo.get(this.e, "getFp")
     this.headers = {
-      'x-rpc-device_fp': device_fp?.data?.device_fp
+      "x-rpc-device_fp": device_fp?.data?.device_fp
     }
 
     /** 获取角色数据 */
-    let character = await MysInfo.get(this.e, this.e.isSr ? 'avatarInfo' : 'character', {
+    let character = await MysInfo.get(this.e, this.e.isSr ? "avatarInfo" : "character", {
       headers: this.headers
     })
     if (!character || character.retcode !== 0) return false
@@ -39,7 +39,7 @@ export default class Calculator extends base {
     await this.getSet()
 
     /** 获取计算角色 */
-    this.dataCharacter = character[this.e.isSr ? 'avatar_list' : 'avatars'].find((item) => item.id == role.roleId)
+    this.dataCharacter = character[this.e.isSr ? "avatar_list" : "avatars"].find((item) => item.id == role.roleId)
 
     /** 获取计算参数 */
     let body = await this.getBody()
@@ -60,19 +60,19 @@ export default class Calculator extends base {
     }
   }
 
-  async getSet () {
-    let defSetSkill = this.e.isSr ? '80,80,6,10,10,10,6,6'.split(',') : '90,90,10,10,10'.split(',')
+  async getSet() {
+    let defSetSkill = this.e.isSr ? "80,80,6,10,10,10,6,6".split(",") : "90,90,10,10,10".split(",")
 
-    let set = this.e.msg.replace(/#|＃|星铁|养成|材料/g, '').trim()
+    let set = this.e.msg.replace(/#|＃|星铁|养成|材料/g, "").trim()
 
-    set = set.replace(/，| /g, ',')
+    set = set.replace(/，| /g, ",")
 
-    set = set.replace(this.role.alias, '')
+    set = set.replace(this.role.alias, "")
 
     let setSkill = []
     let length = this.e.isSr ? 8 : 5
     if (set) {
-      setSkill = set.split(',')
+      setSkill = set.split(",")
       setSkill = lodash.compact(setSkill)
       for (let i = 0; i < length; i++) {
         if (!setSkill[i]) setSkill[i] = defSetSkill[i]
@@ -88,7 +88,7 @@ export default class Calculator extends base {
     }
 
     /** 检查参数 */
-    let check = this.e.isSr ? [80, 80, 6, 10, 10, 10, 6, 6] : [90, 90, 10, 10, 10]
+    let check = this.e.isSr ? [ 80, 80, 6, 10, 10, 10, 6, 6 ] : [ 90, 90, 10, 10, 10 ]
     for (const key in check) {
       if (check[key] < Number(setSkill[key])) {
         setSkill[key] = check[key]
@@ -98,13 +98,13 @@ export default class Calculator extends base {
     this.setSkill = setSkill
   }
 
-  async getBody () {
+  async getBody() {
     // 技能
     let skillList = []
     if (this.dataCharacter) {
       /** 角色存在获取技能数据 */
-      let data = this.e.isSr ? { avatar_id: this.role.roleId, tab_from: 'TabOwned' } : { avatar_id: this.role.roleId }
-      let detail = await MysInfo.get(this.e, 'detail', {
+      let data = this.e.isSr ? { avatar_id: this.role.roleId, tab_from: "TabOwned" } : { avatar_id: this.role.roleId }
+      let detail = await MysInfo.get(this.e, "detail", {
         headers: this.headers,
         ...data
       })
@@ -114,10 +114,10 @@ export default class Calculator extends base {
     } else {
       /** 尚未拥有的角色 */
       if (this.e.isSr) {
-        let detail = await MysInfo.get(this.e, 'detail', {
+        let detail = await MysInfo.get(this.e, "detail", {
           headers: this.headers,
           avatar_id: this.role.roleId,
-          tab_from: 'TabAll'
+          tab_from: "TabAll"
         })
         if (!detail || detail.retcode !== 0) return false
 
@@ -128,11 +128,11 @@ export default class Calculator extends base {
       }
 
       if (!skillList) {
-        this.e.reply('暂无角色数据,请稍后再试\n星铁角色养成请使用*开头')
+        this.e.reply("暂无角色数据,请稍后再试\n星铁角色养成请使用*开头")
         return false
       }
 
-      let four = gsCfg.getdefSet('role', 'other').four
+      let four = gsCfg.getdefSet("role", "other").four
 
       this.dataCharacter = {
         level: 1,
@@ -146,7 +146,7 @@ export default class Calculator extends base {
     let body
     if (this.e.isSr) {
       body = {
-        game: 'hkrpg',
+        game: "hkrpg",
         avatar: {
           item_id: Number(this.role.roleId),
           cur_level: Number(this.dataCharacter.level),
@@ -190,8 +190,8 @@ export default class Calculator extends base {
       }
     }
 
-    if (this.mysApi.getServer().startsWith('os')) {
-      body.lang = 'zh-cn'
+    if (this.mysApi.getServer().startsWith("os")) {
+      body.lang = "zh-cn"
     }
 
     if (this.e.isSr) {
@@ -218,11 +218,11 @@ export default class Calculator extends base {
 
     skillList = skillList.filter((item) => item.max_level != 1)
     this.skillList = skillList
-    return this.e.isSr ? body : { items: [body], lang: "zh-cn", region: this.mysApi.server, uid: this.mysApi.uid }
+    return this.e.isSr ? body : { items: [ body ], lang: "zh-cn", region: this.mysApi.server, uid: this.mysApi.uid }
   }
 
-  async getSkillId (roleId) {
-    let avatarSkill = await MysInfo.get(this.e, 'avatarSkill', {
+  async getSkillId(roleId) {
+    let avatarSkill = await MysInfo.get(this.e, "avatarSkill", {
       headers: this.headers,
       avatar_id: roleId
     })
@@ -235,8 +235,8 @@ export default class Calculator extends base {
     return avatarSkill.list
   }
 
-  async computes (body) {
-    let computes = await MysInfo.get(this.e, 'compute', {
+  async computes(body) {
+    let computes = await MysInfo.get(this.e, "compute", {
       body,
       headers: this.headers
     })
@@ -245,7 +245,7 @@ export default class Calculator extends base {
     let computeList = {}
 
     let formart = (num) => {
-      return num > 10000 ? (num / 10000).toFixed(1) + ' w' : num
+      return num > 10000 ? (num / 10000).toFixed(1) + " w" : num
     }
     if (this.e.isSr) delete computes.coin_id
     for (let i in computes) {
@@ -255,7 +255,7 @@ export default class Calculator extends base {
           consume.forEach(val => {
             computeList[i].push(val)
             val.num = formart(val.num)
-            if (val.name.includes('「')) {
+            if (val.name.includes("「")) {
               val.isTalent = true
             }
           })
@@ -264,7 +264,7 @@ export default class Calculator extends base {
         for (let j in computes[i]) {
           computes[i][j].num = formart(computes[i][j].num)
 
-          if (computes[i][j].item_name.includes('「')) {
+          if (computes[i][j].item_name.includes("「")) {
             computes[i][j].isTalent = true
           }
           computeList[i].push(computes[i][j])

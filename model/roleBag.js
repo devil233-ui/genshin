@@ -1,22 +1,22 @@
-import base from './base.js'
-import MysInfo from './mys/mysInfo.js'
-import gsCfg from './gsCfg.js'
-import lodash from 'lodash'
+import base from "./base.js"
+import MysInfo from "./mys/mysInfo.js"
+import gsCfg from "./gsCfg.js"
+import lodash from "lodash"
 
 export default class RoleBag extends base {
-  constructor (e) {
+  constructor(e) {
     super(e)
-    this.model = 'roleBag'
+    this.model = "roleBag"
   }
 
-  static async get (e) {
+  static async get(e) {
     let roleBag = new RoleBag(e)
     return await roleBag.getData()
   }
 
   /** #武器 */
-  async getData (e) {
-    let res = await MysInfo.get(this.e, 'character')
+  async getData(e) {
+    let res = await MysInfo.get(this.e, "character")
 
     if (!res || res.retcode !== 0) return false
 
@@ -37,8 +37,8 @@ export default class RoleBag extends base {
     return data
   }
 
-  dealData (avatars) {
-    let type = 'all'
+  dealData(avatars) {
+    let type = "all"
     if (avatars.length > 8) {
       if (/(.*)(四星|4星)(.*)/.test(this.e.msg)) {
         type = 4
@@ -48,8 +48,8 @@ export default class RoleBag extends base {
       }
     }
 
-    let costumes = gsCfg.getdefSet('role', 'other').costumes
-    let sortName = gsCfg.getdefSet('role', 'other').sortName
+    let costumes = gsCfg.getdefSet("role", "other").costumes
+    let sortName = gsCfg.getdefSet("role", "other").sortName
 
     let list = []
 
@@ -59,7 +59,7 @@ export default class RoleBag extends base {
         rarity = 5
       }
 
-      if (type != 'all' && rarity != type) {
+      if (type != "all" && rarity != type) {
         continue
       }
 
@@ -83,7 +83,7 @@ export default class RoleBag extends base {
         val.sort = 0
       }
 
-      val.costumesLogo = ''
+      val.costumesLogo = ""
       if (val.costumes && val.costumes.length >= 1) {
         for (let v of val.costumes) {
           if (costumes.includes(v.name)) {
@@ -96,7 +96,7 @@ export default class RoleBag extends base {
       list.push(val)
     }
 
-    list = lodash.chain(list).orderBy(['sortLevel'], ['desc']).orderBy(['sort'], ['desc']).value()
+    list = lodash.chain(list).orderBy([ "sortLevel" ], [ "desc" ]).orderBy([ "sort" ], [ "desc" ]).value()
 
     let num = list.length
 

@@ -1,5 +1,5 @@
-import BaseModel from './BaseModel.js'
-import lodash from 'lodash'
+import BaseModel from "./BaseModel.js"
+import lodash from "lodash"
 
 const { Types } = BaseModel
 
@@ -12,8 +12,8 @@ const COLUMNS = {
   uid: Types.STRING,
   data: {
     type: Types.STRING,
-    get () {
-      let data = this.getDataValue('data')
+    get() {
+      let data = this.getDataValue("data")
       let ret = {}
       try {
         data = JSON.parse(data)
@@ -27,8 +27,8 @@ const COLUMNS = {
       })
       return ret
     },
-    set (data) {
-      this.setDataValue('data', JSON.stringify(lodash.values(data)))
+    set(data) {
+      this.setDataValue("data", JSON.stringify(lodash.values(data)))
     }
   }
 }
