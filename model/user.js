@@ -120,7 +120,7 @@ export default class User extends base {
 
         logger.mark(`${this.e.logFnc} 保存Cookie成功 [ltuid:${mys.ltuid}]`)
 
-        let uidMsg = [ "绑定Cookie成功", mys.getUidInfo() ]
+        let uidMsg = ["绑定Cookie成功", mys.getUidInfo()]
         //    await this.e.reply(uidMsg.join('\n'))
         let msg = []
         msg.push(uidMsg.join("\n"))
@@ -277,7 +277,7 @@ export default class User extends base {
                 { text: "￥删除ck", callback: "￥删除ck" }
             ])
         }
-        msg = await common.makeForwardMsg(this.e, [ [ msg.join("\n"), segment.button(...button) ] ], "绑定成功：使用命令说明")
+        msg = await common.makeForwardMsg(this.e, [[msg.join("\n"), segment.button(...button)]], "绑定成功：使用命令说明")
         await this.e.reply(msg)
     }
 
@@ -293,7 +293,7 @@ export default class User extends base {
         if (!mys) {
             return `删除失败：当前的UID ${uidData?.uid} 无CK信息`
         }
-        let msg = [ "绑定Cookie已删除", mys.getUidInfo() ]
+        let msg = ["绑定Cookie已删除", mys.getUidInfo()]
         await user.delMysUser(uidData.ltuid)
         return msg.join("\n")
     }
@@ -315,22 +315,61 @@ export default class User extends base {
         return await this.showUid()
     }
 
-    async delUid(index) {
-        let user = await this.user()
-        let game = this.e.game || "gs"
-        let uidList = user.getUidList(game)
-        let prefix = { "bh3": "!", "sr": "*", "zzz": "%", "gs": "#" }[game] || "#"
+    async delUid() {
+        // 1. 强制解析消息，不信任底层的 e.game 传参
+        let msg = this.e.msg || "";
+        let game = "gs";
+        if (/^[!！]|^崩三|^崩坏三/.test(msg)) game = "bh3";
+        else if (/^[\*＊]|^星铁|^星穹铁道/.test(msg)) game = "sr";
+        else if (/^[%％]|^绝区零/.test(msg)) game = "zzz";
 
-        if (index > uidList.length) {
-            return await this.e.reply([ "uid序号输入错误", segment.button([ { text: "删除uid", input: `${prefix}删除uid` } ]) ])
+        // 2. 强制提取末尾的序号
+        let indexMatch = msg.match(/[0-9]{1,2}$/);
+        let index = indexMatch ? Number(indexMatch[0]) : 1;
+
+        logger.mark(`[UID删除断点] 识别到游戏: ${game}, 准备删除序号: ${index}`);
+
+        let user = await this.user();
+        let uidList = user.getUidList(game);
+        let prefix = { "bh3": "!", "sr": "*", "zzz": "%", "gs": "#" }[game] || "#";
+
+        if (index > uidList.length || index < 1) {
+            return await this.e.reply(["uid序号输入错误", segment.button([{ text: "删除uid", input: `${prefix}删除uid` }])]);
         }
-        index = Number(index) - 1
-        let uidObj = uidList[index]
+
+        let uidObj = uidList[index - 1];
+        logger.mark(`[UID删除断点] 命中目标UID: ${uidObj.uid}, 数据类型: ${uidObj.type}`);
+
         if (uidObj.type === "ck") {
-            return await this.e.reply([ "CK对应UID无法直接删除，请通过【删除ck】命令来删除", segment.button([ { text: "删除ck", callback: `${prefix}删除ck` } ]) ])
+            let mysUser = user.mysUsers[uidObj.ltuid];
+            if (mysUser && mysUser.uids && mysUser.uids[game]) {
+                // 过滤掉不要的 UID
+                let newUids = mysUser.uids[game].filter(u => String(u) !== String(uidObj.uid));
+                logger.mark(`[UID删除断点] 过滤完成，该游戏剩余UID数量: ${newUids.length}`);
+
+                mysUser.uids[game] = newUids;
+
+                // 【核心大招】深度克隆对象，换个新皮囊！强制触发 Sequelize 的保存机制
+                mysUser.uids = JSON.parse(JSON.stringify(mysUser.uids));
+                await mysUser.save();
+                logger.mark(`[UID删除断点] 底层数据库强制 save() 执行完毕！`);
+
+                // 清理缓存
+                user._map = false;
+                if (String(user.getUid(game)) === String(uidObj.uid)) {
+                    user.setMainUid("", game, false);
+                }
+                await user.save();
+            } else {
+                logger.mark(`[UID删除断点] 异常：在mysUser实例中未找到该游戏的uids结构`);
+            }
+        } else {
+            // 传统手动绑定的 UID 删除逻辑
+            await user.delRegUid(uidObj.uid, game);
+            logger.mark(`[UID删除断点] 普通绑定UID解绑完成`);
         }
-        await user.delRegUid(uidObj.uid, game)
-        return await this.showUid()
+
+        return await this.showUid();
     }
 
     /** 切换uid */
@@ -341,7 +380,7 @@ export default class User extends base {
         let prefix = { "bh3": "!", "sr": "*", "zzz": "%", "gs": "#" }[game] || "#"
 
         if (index > uidList.length) {
-            return await this.e.reply([ "uid序号输入错误", segment.button([ { text: "切换uid", input: `${prefix}uid` } ]) ])
+            return await this.e.reply(["uid序号输入错误", segment.button([{ text: "切换uid", input: `${prefix}uid` }])])
         }
         index = Number(index) - 1
         user.setMainUid(index, game)
@@ -404,7 +443,11 @@ export default class User extends base {
             })
         })
         return this.e.reply([
-            await this.e.runtime.render("genshin", "html/user/uid-list", { uids }, { retType: "base64" }), segment.button([
+            await this.e.runtime.render("genshin", "html/user/uid-list", {
+                ...this.screenData,
+                uids
+            }, { retType: "base64" }), segment.button([
+                { text: "绑定UID", input: "#绑定uid" },
                 { text: "绑定UID", input: "#绑定uid" },
                 { text: "切换UID", input: "#uid" },
                 { text: "删除UID", input: "#删除uid" }
@@ -515,7 +558,7 @@ export default class User extends base {
         await sequelize.query("delete from UserGames where userId is null or data is null", {})
         let games = await UserGameDB.findAll()
         let count = 0
-        await Data.forEach(games, async(game) => {
+        await Data.forEach(games, async (game) => {
             if (!game.userId) {
                 game.destroy()
                 return true
@@ -614,7 +657,7 @@ export default class User extends base {
     async myCk() {
         let user = await this.user()
         if (!user.hasCk) {
-            this.e.reply([ "当前尚未绑定Cookie，请发送  #扫码登录", segment.button([ { text: "帮助", input: "#Cookie帮助" } ]) ])
+            this.e.reply(["当前尚未绑定Cookie，请发送  #扫码登录", segment.button([{ text: "帮助", input: "#Cookie帮助" }])])
         }
         let mys = user.getMysUser(this.e)
         if (mys) {
@@ -635,7 +678,7 @@ export default class User extends base {
         let checkRet = await user.checkCk()
         let cks = []
         lodash.forEach(checkRet, (ds, idx) => {
-            let tmp = [ `\n#${idx + 1}: [CK:${ds.ltuid}] - 【${ds.status === 0 ? "正常" : "失效"}】` ]
+            let tmp = [`\n#${idx + 1}: [CK:${ds.ltuid}] - 【${ds.status === 0 ? "正常" : "失效"}】`]
             if (ds.uids && ds.uids.length > 0) {
                 let dsUids = []
                 lodash.forEach(ds.uids, (u) => {

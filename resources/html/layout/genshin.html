@@ -1,8 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-cn">
 <head>
   <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+  <meta name="viewport" content="width=device-width">
   <link rel="shortcut icon" href="#"/>
+  <link rel="preload" href="{{_miao_path}}common/font/HYWH-65W.woff" as="font" type="font/woff">
+  <link rel="preload" href="{{_miao_path}}common/font/NZBZ.woff" as="font" type="font/woff">
+  <link rel="preload" href="{{_miao_path}}common/font/tttgbnumber.woff" as="font" type="font/woff">
+  <link rel="stylesheet" type="text/css" href="{{_miao_path}}common/common.css"/>
+  <title>genshin-plugin</title>
   {{block 'css'}}{{/block}}
   <style>
     .head_box {
@@ -15,10 +21,14 @@
   </style>
 </head>
 
-<body class="body_box">
-<div class="container" id="container">
+<!-- 动态计算当前卡片的属性背景颜色 -->
+{{set elemCls = {火:'pyro',冰:'cryo',风:'anemo',雷:'electro',量子:'quantum',虚数:'geo',物理:'sr', }[element||elem] || element || elem || 'hydro' }}
+
+<!-- 将动态计算的 class 赋予 body，彻底激活喵喵的 common.css 规则 -->
+<body class="elem-{{elemCls}} {{displayMode || mode || `default`}}-mode {{bodyClass}}" {{sys.scale}}>
+<div class="container elem-bg" id="container">
   {{block 'main'}}{{/block}}
-  <div class="logo">Created By {{yzName}} {{yzVersion}}</div>
+  <div class="copyright">Created By {{yzName}} {{yzVersion}} && devil233-ui/genshin</div>
 </div>
 </body>
 </html>
