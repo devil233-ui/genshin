@@ -14,7 +14,7 @@ export class calendar extends plugin {
       priority: -114514,
       rule: [
         {
-          reg: "^#?(原神|星铁|星穹铁道|绝区零|ZZZ|zzz)?(日历|活动日历|任务日历|个人日历)$",
+          reg: "^#?(原神|星铁|星穹铁道|绝区零|ZZZ|zzz)?(活动日历|任务日历|个人日历)$",
           fnc: "calendar",
         },
       ],
