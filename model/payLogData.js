@@ -73,17 +73,19 @@ export class PayData {
     if (data?.uid) {
       return data
     }
-    return {errorMsg: "获取失败，可能是链接已过期或不正确"}
+    return { errorMsg: "获取失败，可能是链接已过期或不正确" }
   }
 
   checkResult(ret) {
     if (ret?.retcode === -101 || ret?.retcode === -100) {
-      return ret.retcode === -101 ? {errorMsg: "您的链接过期，请重新获取"} : {errorMsg: "链接不正确，请重新获取"}
+      return ret.retcode === -101
+        ? { errorMsg: "您的链接过期，请重新获取" }
+        : { errorMsg: "链接不正确，请重新获取" }
     }
     if (/unknown auth appid/.test(ret?.message)) {
-      return {errorMsg: "抽卡或其他链接现已无法获取充值记录，请发送客服页面的链接！"}
+      return { errorMsg: "抽卡或其他链接现已无法获取充值记录，请发送客服页面的链接！" }
     }
-    return {errorMsg: ""}
+    return { errorMsg: "" }
   }
 
   /** 对原始数据进行筛选，组合 */
@@ -99,7 +101,7 @@ export class PayData {
     await this.getPrimogemLog()
     // 判断零氪党的情况
     if (this.#oringinData.length === 0) {
-      return {errorMsg: "未获取到您的任何充值数据"}
+      return { errorMsg: "未获取到您的任何充值数据" }
     }
     // 将原始数据按id排序
     this.#oringinData = this.#oringinData.sort((a, b) => {
@@ -112,8 +114,8 @@ export class PayData {
       }
     })
     // 单双倍结晶数
-    const price = [ 680, 300, 8080, 3880, 2240, 1090, 330, 60 ]
-    const doublePrice = [ 0, 0, 12960, 6560, 3960, 1960, 600, 120 ]
+    const price = [680, 300, 8080, 3880, 2240, 1090, 330, 60]
+    const doublePrice = [0, 0, 12960, 6560, 3960, 1960, 600, 120]
     let month = 0
     let sum = 0
     let i = -1
@@ -132,12 +134,12 @@ export class PayData {
         month = thisMonth
         list[listIndex++] = {
           month: thisMonth + "月",
-          payNum: [ 0, 0, 0, 0, 0, 0, 0, 0 ]
+          payNum: [0, 0, 0, 0, 0, 0, 0, 0],
         }
       } else if (!i) {
         list[i] = {
           month: thisMonth + "月",
-          payNum: [ 0, 0, 0, 0, 0, 0, 0, 0 ]
+          payNum: [0, 0, 0, 0, 0, 0, 0, 0],
         }
       }
       for (let index = 0; index < 8; index++) {
@@ -151,23 +153,23 @@ export class PayData {
     return {
       uid: this.#genShinId,
       crystal: sum,
-      monthData: list
+      monthData: list,
     }
   }
 
   headers = {
     headers: {
-      "accept": "application/json, text/plain, */*",
+      accept: "application/json, text/plain, */*",
       "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
       "sec-fetch-dest": "empty",
       "sec-fetch-mode": "cors",
-      "sec-fetch-site": "same-site"
+      "sec-fetch-site": "same-site",
     },
     referrer: "https://webstatic.mihoyo.com/",
     referrerPolicy: "strict-origin-when-cross-origin",
     method: "GET",
     mode: "cors",
-    credentials: "include"
+    credentials: "include",
   }
 
   /**
@@ -177,7 +179,8 @@ export class PayData {
    */
   getUrl(api = "getCrystalLog") {
     const baseUrl = "https://hk4e-api.mihoyo.com/common/hk4e_self_help_query/User"
-    const isUserInfo = api === "getUserInfo", isCrystalLog = api === "getCrystalLog"
+    const isUserInfo = api === "getUserInfo",
+      isCrystalLog = api === "getCrystalLog"
     const url = isUserInfo ? "/GetUserInfo" : isCrystalLog ? "/GetCrystalLog" : "/GetPrimogemLog"
     let params = ""
     params += "?selfquery_type=1"
@@ -209,10 +212,10 @@ export class PayData {
 
 export class HtmlData extends base {
   /**
-     * @param data 数据
-     * @param data.monthData 月份数据
-     * @param data.crystal 总结晶数
-     */
+   * @param data 数据
+   * @param data.monthData 月份数据
+   * @param data.crystal 总结晶数
+   */
   constructor(data = {}) {
     super()
     this.monthData = data.monthData
@@ -226,14 +229,14 @@ export class HtmlData extends base {
   monthData = []
 
   // 价格
-  price = [ 68, 30, 648, 328, 198, 98, 30, 6 ]
+  price = [68, 30, 648, 328, 198, 98, 30, 6]
 
   /** 柱形图数据 */
   getBarData() {
     return this.monthData.map(v => {
       return {
         type: v.month,
-        sales: v.payNum.reduce((sum, val, index) => sum + val * this.price[index], 0)
+        sales: v.payNum.reduce((sum, val, index) => sum + val * this.price[index], 0),
       }
     })
   }
@@ -245,21 +248,21 @@ export class HtmlData extends base {
     return [
       {
         title: "总消费",
-        value: "￥" + this.getBarData().reduce((sum, val) => sum + val.sales, 0)
+        value: "￥" + this.getBarData().reduce((sum, val) => sum + val.sales, 0),
       },
       {
         title: "总结晶",
-        value: this.crystal
+        value: this.crystal,
       },
       {
         title: "消费最多",
-        value: maxMonth.type
+        value: maxMonth.type,
       },
       {
         title: maxMonth.type + "消费",
-        value: "￥" + maxMonth.sales
+        value: "￥" + maxMonth.sales,
       },
-      ...sum
+      ...sum,
     ]
   }
 
@@ -272,7 +275,7 @@ export class HtmlData extends base {
       if (value) {
         pieData.push({
           value,
-          name: val.title
+          name: val.title,
         })
       }
     })
@@ -300,7 +303,7 @@ export class HtmlData extends base {
       198: 0,
       98: 0,
       30: 0,
-      6: 0
+      6: 0,
     }
     // 循环sum,按照月份统计各个充值的类别总数
     let k = Object.keys(sum).reverse()
@@ -314,7 +317,7 @@ export class HtmlData extends base {
     return k.map((val, index) => {
       return {
         title: val,
-        value: value[index]
+        value: value[index],
       }
     })
   }
@@ -328,7 +331,7 @@ export async function renderImg(data) {
     barData: JSON.stringify(htmlData.getBarData()),
     pieData: JSON.stringify(htmlData.getPieData()),
     saveId: htmlData.uid,
-    uid: htmlData.uid
+    uid: htmlData.uid,
   }
   let img = await puppeteer.screenshot("payLog", imgDatas)
   return img

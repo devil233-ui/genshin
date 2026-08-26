@@ -17,38 +17,38 @@ export class gcLog extends plugin {
       rule: [
         {
           reg: "(.*)authkey=(.*)",
-          fnc: "logUrl"
+          fnc: "logUrl",
         },
         {
           reg: "^#?(原神|星铁)?(强制)?导入记录(json)?$",
-          fnc: "logJson"
+          fnc: "logJson",
         },
         {
           reg: "^#?(原神|星铁)?(全部)?(抽卡|抽奖|角色|角色联动|武器|武器联动|集录|常驻|up|新手|光锥|光锥联动|全部)池*(记录|祈愿|分析)$",
-          fnc: "getLog"
+          fnc: "getLog",
         },
         {
           reg: "^#?(原神|星铁)?(强制)?导出记录(json)?(v2|v4)?$",
-          fnc: "exportLog"
+          fnc: "exportLog",
         },
         {
           reg: /(记录帮助|抽卡帮助)$/,
-          fnc: "help"
+          fnc: "help",
         },
         {
           reg: "^#?(安卓|苹果|电脑|pc|ios)帮助$",
-          fnc: "helpPort"
+          fnc: "helpPort",
         },
         {
           reg: "^#?(原神|星铁)?(抽卡|抽奖|角色|武器|集录|常驻|up|新手|光锥)池*统计$",
-          fnc: "logCount"
+          fnc: "logCount",
         },
         {
           // #设置全量更新抽卡记录
           reg: "^#?设置全量(更新|获取)(抽卡|祈愿)记录\\s*(开|关|on|off)?$",
-          fnc: "setFetchFullLog"
-        }
-      ]
+          fnc: "setFetchFullLog",
+        },
+      ],
     })
 
     this.androidUrl = "https://docs.qq.com/doc/DUWpYaXlvSklmVXlX"
@@ -58,35 +58,35 @@ export class gcLog extends plugin {
         return segment.button(
           [
             { text: "角色记录", callback: `${this.prefix}角色记录` },
-            { text: "角色统计", callback: `${this.prefix}角色统计` }
+            { text: "角色统计", callback: `${this.prefix}角色统计` },
           ],
           [
             { text: "武器记录", callback: `${this.prefix}武器记录` },
-            { text: "武器统计", callback: `${this.prefix}武器统计` }
+            { text: "武器统计", callback: `${this.prefix}武器统计` },
           ],
           [
             { text: "角色联动记录", callback: `${this.prefix}角色联动记录` },
-            { text: "角色联动统计", callback: `${this.prefix}角色联动统计` }
+            { text: "角色联动统计", callback: `${this.prefix}角色联动统计` },
           ],
           [
             { text: "武器联动记录", callback: `${this.prefix}武器联动记录` },
-            { text: "武器联动统计", callback: `${this.prefix}武器联动统计` }
+            { text: "武器联动统计", callback: `${this.prefix}武器联动统计` },
           ],
           [
             { text: "集录记录", callback: `${this.prefix}集录记录` },
-            { text: "集录统计", callback: `${this.prefix}集录统计` }
+            { text: "集录统计", callback: `${this.prefix}集录统计` },
           ],
           [
             { text: "常驻记录", callback: `${this.prefix}常驻记录` },
-            { text: "常驻统计", callback: `${this.prefix}常驻统计` }
-          ]
+            { text: "常驻统计", callback: `${this.prefix}常驻统计` },
+          ],
         )
-      }
+      },
     })
   }
 
   async init() {
-    let file = [ "./data/gachaJson", "./data/srJson", "./temp/html/StarRail", "./temp/uigf" ]
+    let file = ["./data/gachaJson", "./data/srJson", "./temp/html/StarRail", "./temp/uigf"]
     for (let i of file) {
       if (!fs.existsSync(i)) {
         fs.mkdirSync(i)
@@ -108,25 +108,31 @@ export class gcLog extends plugin {
 
     await this.renderImg("genshin", "html/gacha/gacha-log", data)
 
-    if (this.e.isGroup) { this.e.reply("已收到链接，请撤回", false, { at: true }) }
+    if (this.e.isGroup) {
+      this.e.reply("已收到链接，请撤回", false, { at: true })
+    }
   }
 
   /** #抽卡记录 */
   async getLog() {
-    this.e.isAll = !!(this.e.msg.includes("全部"))
+    this.e.isAll = !!this.e.msg.includes("全部")
     let data = await new GachaLog(this.e).getLogData()
     if (!data) return
     let name = "html/gacha/gacha-log"
     if (this.e.isAll) {
       name = "html/gacha/gacha-all-log"
     }
-    this.reply([ await this.renderImg("genshin", name, data, { retType: "base64" }), this.button ])
+    this.reply([await this.renderImg("genshin", name, data, { retType: "base64" }), this.button])
   }
 
   /** 导出记录 */
   exportLog() {
     if (this.e.isGroup && !this.e.msg.includes("强制")) {
-      return this.reply(`建议私聊(需加好友)导出，若你确认要在此导出，请发送【${this.e.game === "sr" ? "*" : "#"}强制导出记录】`, false, { at: true })
+      return this.reply(
+        `建议私聊(需加好友)导出，若你确认要在此导出，请发送【${this.e.game === "sr" ? "*" : "#"}强制导出记录】`,
+        false,
+        { at: true },
+      )
     }
     if (this.e.msg.includes("v2")) {
       this.e.uigfver = "v2"
@@ -138,7 +144,11 @@ export class gcLog extends plugin {
 
   logJson() {
     if (this.e.isGroup && !this.e.msg.includes("强制")) {
-      return this.reply(`建议私聊(需加好友)导出，若你确认要在此导入，请发送【${this.e.game === "sr" ? "*" : "#"}强制导入记录】`, false, { at: true })
+      return this.reply(
+        `建议私聊(需加好友)导出，若你确认要在此导入，请发送【${this.e.game === "sr" ? "*" : "#"}强制导入记录】`,
+        false,
+        { at: true },
+      )
     }
 
     this.setContext("logJsonFile")
@@ -151,12 +161,13 @@ export class gcLog extends plugin {
     this.finish("logJsonFile")
     await new ExportLog(this.e).logJson()
 
-    if (this.e.isGroup) { this.reply("已收到文件，请撤回", false, { at: true }) }
+    if (this.e.isGroup) {
+      this.reply("已收到文件，请撤回", false, { at: true })
+    }
   }
 
   async help(e) {
-    let textMessage1 =
-        `如已扫过码请先尝试【#刷新ck】，否则【#扫码登录】
+    let textMessage1 = `如已扫过码请先尝试【#刷新ck】，否则【#扫码登录】
 【原神】
 1.发送【#更新抽卡记录】
 2.导入本地文件：发送https://uigf.org/zh/ 标准json
@@ -180,7 +191,7 @@ https://github.com/Scighost/Starward
 【绝区零】
 1.发送【%更新抽卡记录】，等待获取后发送【%抽卡记录】
 2.导入本地文件：%导入记录，然后发送https://uigf.org/zh/ 标准json
-`;
+`
     let textMessage2 = `    
 【记录帮助-安卓】
 同上      
@@ -249,24 +260,26 @@ powershell iex(irm 'https://gitee.com/storyc/halo-file/raw/master/gsLink-amwz.ps
 powershell iex(irm 'https://gitee.com/storyc/halo-file/raw/master/zzzLink-bxgb.ps1')
 
     4.抽卡分析的链接就在剪贴板了，粘贴即可
-    `;
-    let msg = [];
-    msg.push(textMessage1);
-    msg.push(textMessage2);
-    if (msg) await this.reply(common.makeForwardMsg(e, msg, "抽卡帮助"));// 文本消息合并
-    return true;
-}
+    `
+    let msg = []
+    msg.push(textMessage1)
+    msg.push(textMessage2)
+    if (msg) await this.reply(common.makeForwardMsg(e, msg, "抽卡帮助")) // 文本消息合并
+    return true
+  }
 
   async logCount() {
     let data = await new LogCount(this.e).count()
     if (!data) return
 
-    this.reply([ await this.renderImg("genshin", "html/gacha/log-count", data, { retType: "base64" }), this.button ])
+    this.reply([
+      await this.renderImg("genshin", "html/gacha/log-count", data, { retType: "base64" }),
+      this.button,
+    ])
   }
 
   async setFetchFullLog() {
     let isOff = this.e.msg.includes("关") || this.e.msg.includes("off")
     await new GachaLog(this.e).setFetchFullLog(!isOff)
   }
-
 }

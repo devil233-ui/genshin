@@ -12,56 +12,56 @@ export class user extends plugin {
       rule: [
         {
           reg: "^([#\\*%!￥&])?(体力|[Cc](oo)?[Kk](ie)?)帮助",
-          fnc: "ckHelp"
+          fnc: "ckHelp",
         },
         {
           reg: "^([#\\*%!￥&])[Cc](oo)?[Kk](ie)?代码$",
-          fnc: "ckCode"
+          fnc: "ckCode",
         },
         {
           reg: /^([#\\*%!￥&])绑定c(oo)?k(ie)?$/i,
-          fnc: "bindCk"
+          fnc: "bindCk",
         },
         {
           reg: "(.*)_MHYUUID(.*)",
           event: "message.private",
-          fnc: "noLogin"
+          fnc: "noLogin",
         },
         {
           reg: /^([#\\*%!￥&])?(原神|星铁|绝区零|崩三|崩坏三)?我的c(oo)?k(ie)?$/i,
           event: "message",
-          fnc: "myCk"
+          fnc: "myCk",
         },
         {
           reg: /^([#\\*%!￥&])?(原神|星铁|绝区零|崩三|崩坏三)?删除c(oo)?k(ie)?$/i,
-          fnc: "delCk"
+          fnc: "delCk",
         },
         {
           reg: /^([#\\*%!￥&])?(原神|星铁|绝区零|崩三|崩坏三)?(删除|解绑)uid(\s|\+)*([0-9]{1,2})?$/i,
-          fnc: "delUid"
+          fnc: "delUid",
         },
         {
           // 修正了祖传的 bingUid 拼写错误
           reg: /^([#\\*%!￥&])?(原神|星铁|绝区零|崩三|崩坏三)?绑定(uid)?(\s|\+)*((1[0-9]|[1-9])[0-9]{8}|[1-9][0-9]{7,8})$/i,
-          fnc: "bindUid"
+          fnc: "bindUid",
         },
         {
           reg: /^([#\\*%!￥&])?(原神|星铁|绝区零|崩三|崩坏三)?(我的)?(uid)[0-9]{0,2}$/i,
-          fnc: "showUid"
+          fnc: "showUid",
         },
         {
           reg: /^([#\\*%!￥&])?\s*(检查|我的)*c(oo)?k(ie)?(状态)*$/i,
-          fnc: "checkCkStatus"
+          fnc: "checkCkStatus",
         },
         {
           reg: "^#(接受)?绑定(主|子)?(用户|账户|账号)(\\[[a-zA-Z0-9_\\-:\\]+\\]){0,2}$",
-          fnc: "bindNoteUser"
+          fnc: "bindNoteUser",
         },
         {
           reg: "^#(删除绑定|取消绑定|解除绑定|解绑|删除|取消)(主|子)(用户|账户|账号)$",
-          fnc: "bindNoteUser"
-        }
-      ]
+          fnc: "bindNoteUser",
+        },
+      ],
     })
     this.User = new User(e)
   }
@@ -103,10 +103,10 @@ export class user extends plugin {
 
     if (/绑定uid$/i.test(msg)) {
       let prompts = {
-        "bh3": [ "saveBh3Uid", "崩坏三" ],
-        "zzz": [ "saveZzzUid", "绝区零" ],
-        "sr": [ "saveSrUid", "星铁" ],
-        "gs": [ "saveUid", "原神" ]
+        bh3: ["saveBh3Uid", "崩坏三"],
+        zzz: ["saveZzzUid", "绝区零"],
+        sr: ["saveSrUid", "星铁"],
+        gs: ["saveUid", "原神"],
       }
       let gameData = prompts[this.e.game] || prompts["gs"]
       this.setContext(gameData[0])
@@ -118,7 +118,9 @@ export class user extends plugin {
   saveUid() {
     if (!this.e.msg) return
     let uid = this.e.msg.match(/(18|[1-9])[0-9]{8}/g)
-    if (!uid) { return this.reply("原神UID输入错误", false, { at: true }) }
+    if (!uid) {
+      return this.reply("原神UID输入错误", false, { at: true })
+    }
     this.e.msg = "#绑定" + uid[0]
     this.bindUid()
     this.finish("saveUid")
@@ -127,7 +129,9 @@ export class user extends plugin {
   saveSrUid() {
     if (!this.e.msg) return
     let uid = this.e.msg.match(/(18|[1-9])[0-9]{8}/g)
-    if (!uid) { return this.reply("星铁UID输入错误", false, { at: true }) }
+    if (!uid) {
+      return this.reply("星铁UID输入错误", false, { at: true })
+    }
     this.e.msg = "*绑定" + uid[0]
     this.bindUid()
     this.finish("saveSrUid")
@@ -136,7 +140,9 @@ export class user extends plugin {
   saveZzzUid() {
     if (!this.e.msg) return
     let uid = this.e.msg.match(/(1[0-9]|[1-9])[0-9]{8}|[1-9][0-9]{7}/g)
-    if (!uid) { return this.reply("绝区零UID输入错误", false, { at: true }) }
+    if (!uid) {
+      return this.reply("绝区零UID输入错误", false, { at: true })
+    }
     this.e.msg = "%绑定" + uid[0]
     this.bindUid()
     this.finish("saveZzzUid")
@@ -145,21 +151,33 @@ export class user extends plugin {
   saveBh3Uid() {
     if (!this.e.msg) return
     let uid = this.e.msg.match(/[1-9][0-9]{7,8}/g)
-    if (!uid) { return this.reply("崩坏三UID输入错误", false, { at: true }) }
+    if (!uid) {
+      return this.reply("崩坏三UID输入错误", false, { at: true })
+    }
     this.e.msg = "!绑定" + uid[0]
     this.bindUid()
     this.finish("saveBh3Uid")
   }
 
-  async noLogin() { await this.reply("绑定Cookie失败\n请发送 #扫码登录，使用米游社扫码") }
-  async ckCode() { await this.reply("javascript:(()=>{prompt('',document.cookie)})();") }
-  async ckHelp() { await this.reply("请发送 #扫码登录，使用米游社扫码") }
+  async noLogin() {
+    await this.reply("绑定Cookie失败\n请发送 #扫码登录，使用米游社扫码")
+  }
+  async ckCode() {
+    await this.reply("javascript:(()=>{prompt('',document.cookie)})();")
+  }
+  async ckHelp() {
+    await this.reply("请发送 #扫码登录，使用米游社扫码")
+  }
   async bindCk() {
     if (!this.e.ck) return await this.reply("看伊涅芙手册去")
     await this.User.bing()
   }
-  async delCk() { await this.reply(await this.User.delCk()) }
-  async bindUid() { await this.User.bindUid() }
+  async delCk() {
+    await this.reply(await this.User.delCk())
+  }
+  async bindUid() {
+    await this.User.bindUid()
+  }
   async showUid() {
     let index = this.e.msg.match(/[0-9]{1,2}/g)
     if (index && index[0]) {
@@ -185,6 +203,10 @@ export class user extends plugin {
     await this.User.loadOldDataV3()
     await this.User.loadOldUid()
   }
-  async checkCkStatus() { await this.User.checkCkStatus() }
-  async bindNoteUser() { await this.User.bindNoteUser() }
+  async checkCkStatus() {
+    await this.User.checkCkStatus()
+  }
+  async bindNoteUser() {
+    await this.User.bindNoteUser()
+  }
 }

@@ -14,21 +14,21 @@ export class calculator extends plugin {
       rule: [
         {
           reg: "^#*(星铁)?(.*)(养成|材料)([0-9]|,|，| )*$",
-          fnc: "Calculator"
+          fnc: "Calculator",
         },
         {
           reg: "^#*(星铁)?角色(养成|计算|养成计算)帮助$",
-          fnc: "calculatorHelp"
+          fnc: "calculatorHelp",
         },
         {
           reg: "^#*尘歌壶模数(养成|计算|养成计算)帮助$",
-          fnc: "blueprintHelp"
+          fnc: "blueprintHelp",
         },
         {
           reg: "^#*尘歌壶(模数|养成|养成计算)(\\d{10,15})$",
-          fnc: "Blueprint"
+          fnc: "Blueprint",
         },
-      ]
+      ],
     })
     this._path = process.cwd().replace(/\\/g, "/")
   }
@@ -60,7 +60,7 @@ export class calculator extends plugin {
     let role = gsCfg.getRole(this.e.msg, "#|＃|星铁|养成|材料|[0-9]|,|，| ", this.e.isSr)
     if (!role) return false
     this.e.isSr = role.game === "sr"
-    if ([ 10000005, 10000007, 20000000 ].includes(Number(role.roleId))) {
+    if ([10000005, 10000007, 20000000].includes(Number(role.roleId))) {
       await this.e.reply("暂不支持旅行者养成计算")
       return false
     }

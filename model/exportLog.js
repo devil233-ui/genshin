@@ -15,7 +15,9 @@ export default class ExportLog extends base {
     /** 绑定的uid */
     this.uidKey = `Yz:genshin:mys:qq-uid:${this.userId}`
 
-    this.path = this.e.isSr ? `./data/srJson/${this.e.user_id}/` : `./data/gachaJson/${this.e.user_id}/`
+    this.path = this.e.isSr
+      ? `./data/srJson/${this.e.user_id}/`
+      : `./data/gachaJson/${this.e.user_id}/`
 
     this.game = this.e.game
 
@@ -24,7 +26,7 @@ export default class ExportLog extends base {
         gs: [
           { type: 301, typeName: "角色活动" },
           { type: 302, typeName: "武器活动" },
-          { type: 200, typeName: "常驻" }
+          { type: 200, typeName: "常驻" },
         ],
         sr: [
           { type: 11, typeName: "角色活动" },
@@ -32,8 +34,8 @@ export default class ExportLog extends base {
           { type: 21, typeName: "角色联动" },
           { type: 22, typeName: "武器联动" },
           { type: 2, typeName: "新手活动" },
-          { type: 1, typeName: "常驻" }
-        ]
+          { type: 1, typeName: "常驻" },
+        ],
       }
       return pool[game]
     }
@@ -43,7 +45,7 @@ export default class ExportLog extends base {
         gs: {
           301: "角色",
           302: "武器",
-          200: "常驻"
+          200: "常驻",
         },
         sr: {
           11: "角色",
@@ -51,8 +53,8 @@ export default class ExportLog extends base {
           21: "角色联动",
           22: "武器联动",
           2: "新手",
-          1: "常驻"
-        }
+          1: "常驻",
+        },
       }
       return type[game]
     }
@@ -60,7 +62,10 @@ export default class ExportLog extends base {
 
   async exportJson() {
     if (!this.e.isSr) {
-      await common.downFile("https://api.uigf.org/dict/genshin/chs.json", "./temp/uigf/genshin.json")
+      await common.downFile(
+        "https://api.uigf.org/dict/genshin/chs.json",
+        "./temp/uigf/genshin.json",
+      )
     }
     await this.getUid()
 
@@ -86,7 +91,7 @@ export default class ExportLog extends base {
         export_app: yunzaiName,
         export_app_version: cfg.package.version,
       },
-      list
+      list,
     }
 
     if (this.e.isSr) {
@@ -104,14 +109,12 @@ export default class ExportLog extends base {
 
     this.e.reply(`导出成功：${this.uid}.json，共${list.length}条 \n请接收文件`)
 
-    if (this.e.group?.sendFile)
-      await this.e.group.sendFile(saveFile)
-    else if (this.e.friend?.sendFile)
-      await this.e.friend.sendFile(saveFile)
+    if (this.e.group?.sendFile) await this.e.group.sendFile(saveFile)
+    else if (this.e.friend?.sendFile) await this.e.friend.sendFile(saveFile)
     else this.e.reply("导出失败：暂不支持发送文件")
 
     /** 删除文件 */
-    fs.unlink(saveFile, () => { })
+    fs.unlink(saveFile, () => {})
   }
 
   async getUid() {
@@ -132,7 +135,7 @@ export default class ExportLog extends base {
       uigf = false
     }
     let res = {
-      list: []
+      list: [],
     }
     let tmpId = {}
     for (let v of this.pool(this.game)) {
@@ -170,12 +173,12 @@ export default class ExportLog extends base {
           tmpId[id].push(newId)
           v.id = newId
         } else {
-          tmpId[id] = [ id ]
+          tmpId[id] = [id]
         }
         res.list.push(v)
       }
     }
-    res.list = lodash.orderBy(res.list, [ "id", "asc" ])
+    res.list = lodash.orderBy(res.list, ["id", "asc"])
     return res
   }
 
@@ -239,16 +242,18 @@ export default class ExportLog extends base {
     }
 
     /** 删除文件 */
-    fs.unlink(textPath, () => { })
+    fs.unlink(textPath, () => {})
 
-    await this.e.reply(`${this.e.file.name}，${this.e.isSr ? "星铁" : "原神"}记录导入成功\n${msg.join("\n")}`)
+    await this.e.reply(
+      `${this.e.file.name}，${this.e.isSr ? "星铁" : "原神"}记录导入成功\n${msg.join("\n")}`,
+    )
   }
 
   dealJson(list) {
     let data = {}
 
     /** 必要字段 */
-    let reqField = [ "gacha_type", "item_type", "name", "time" ]
+    let reqField = ["gacha_type", "item_type", "name", "time"]
 
     for (let v of reqField) {
       if (!list[0][v]) {

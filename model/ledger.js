@@ -13,19 +13,27 @@ export default class Ledger extends base {
     super(e)
     this.e = e
     this.model = "ledger"
-    if (this.e.msg?.includes("星琼"))
-      this.e.isSr = true
+    if (this.e.msg?.includes("星琼")) this.e.isSr = true
 
-    this.color = [ "#73a9c6", "#d56565", "#70b2b4", "#bd9a5a", "#739970", "#7a6da7", "#597ea0","#ffb6c1" ]
+    this.color = [
+      "#73a9c6",
+      "#d56565",
+      "#70b2b4",
+      "#bd9a5a",
+      "#739970",
+      "#7a6da7",
+      "#597ea0",
+      "#ffb6c1",
+    ]
     this.action = {
-      "other": 0,
-      "adventure_reward": 1,
-      "space_reward": 2,
-      "daily_reward": 3,
-      "abyss_reward": 4,
-      "mail_reward": 5,
-      "event_reward": 6,
-      "combat_reward": 7
+      other: 0,
+      adventure_reward: 1,
+      space_reward: 2,
+      daily_reward: 3,
+      abyss_reward: 4,
+      mail_reward: 5,
+      event_reward: 6,
+      combat_reward: 7,
     }
   }
 
@@ -47,7 +55,7 @@ export default class Ledger extends base {
   getMonth() {
     let month = this.e.msg.replace(/#|原石|月|札记|星铁|星琼/g, "")
     let NowMonth = Number(moment().month()) + 1
-    let monthData = [ "一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二" ]
+    let monthData = ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"]
     if (month) {
       if (isNaN(month)) {
         for (let i in monthData) {
@@ -68,12 +76,15 @@ export default class Ledger extends base {
     }
 
     // 获取前三个月
-    let monthArr = [ 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ].splice(NowMonth - 1, 3)
+    let monthArr = [11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].splice(NowMonth - 1, 3)
     if (!monthArr.includes(Number(month))) {
       this.e.reply("札记仅支持查询最近三个月的数据")
       return false
     }
-    if ((NowMonth >= 3 && month > NowMonth) || (NowMonth < 3 && month > NowMonth && month <= 9 + month)) {
+    if (
+      (NowMonth >= 3 && month > NowMonth) ||
+      (NowMonth < 3 && month > NowMonth && month <= 9 + month)
+    ) {
       month = NowMonth
     }
     if (this.e.isSr) {
@@ -105,13 +116,15 @@ export default class Ledger extends base {
       ledgerInfo.month_data[gacha] = (ledgerInfo.month_data[gacha] / 10000).toFixed(2) + " w"
     }
     if (ledgerInfo.month_data[last_gacha] > 10000) {
-      ledgerInfo.month_data[last_gacha] = (ledgerInfo.month_data[last_gacha] / 10000).toFixed(2) + " w"
+      ledgerInfo.month_data[last_gacha] =
+        (ledgerInfo.month_data[last_gacha] / 10000).toFixed(2) + " w"
     }
     if (ledgerInfo.month_data[mora] > 10000) {
       ledgerInfo.month_data[mora] = (ledgerInfo.month_data[mora] / 10000).toFixed(1) + " w"
     }
     if (ledgerInfo.month_data[last_mora] > 10000) {
-      ledgerInfo.month_data[last_mora] = (ledgerInfo.month_data[last_mora] / 10000).toFixed(1) + " w"
+      ledgerInfo.month_data[last_mora] =
+        (ledgerInfo.month_data[last_mora] / 10000).toFixed(1) + " w"
     }
     if (ledgerInfo.day_data[gacha] > 10000) {
       ledgerInfo.day_data[gacha] = (ledgerInfo.day_data[gacha] / 10000).toFixed(1) + " w"
@@ -121,7 +134,7 @@ export default class Ledger extends base {
     }
 
     ledgerInfo.color = []
-    ledgerInfo.month_data.group_by.forEach((item) => {
+    ledgerInfo.month_data.group_by.forEach(item => {
       if (this.e.isSr) {
         item.color = this.color[this.action[item.action]]
         item.action_name = item.action_name.slice(0, 4)
@@ -134,28 +147,33 @@ export default class Ledger extends base {
     ledgerInfo.group_by = JSON.stringify(ledgerInfo.month_data.group_by)
     ledgerInfo.color = JSON.stringify(ledgerInfo.color)
 
-    let iconChar = lodash.sample([ "希儿", "白露", "艾丝妲", "布洛妮娅", "姬子", "卡芙卡", "克拉拉", "停云", "佩拉", "黑塔", "希露瓦", "银狼" ])
+    let iconChar = lodash.sample([
+      "希儿",
+      "白露",
+      "艾丝妲",
+      "布洛妮娅",
+      "姬子",
+      "卡芙卡",
+      "克拉拉",
+      "停云",
+      "佩拉",
+      "黑塔",
+      "希露瓦",
+      "银狼",
+    ])
     let char = Character.get(iconChar, "gs")
 
-    let week = [
-      "星期日",
-      "星期一",
-      "星期二",
-      "星期三",
-      "星期四",
-      "星期五",
-      "星期六"
-    ]
+    let week = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"]
 
     return {
       saveId: this.e.uid,
       uid: this.e.uid,
       day,
-      icon: char.imgs?.face, 
+      icon: char.imgs?.face,
       srday: `${week[moment().day()]}`,
       nowDay: moment(new Date()).format("YYYY年MM月DD日"),
       ...ledgerInfo,
-      ...this.screenData
+      ...this.screenData,
     }
   }
 
@@ -182,7 +200,7 @@ export default class Ledger extends base {
     let NowMonth = Number(moment().month()) + 1
 
     // 获取前三个月
-    let monthArr = [ 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ].splice(NowMonth - 1, 3)
+    let monthArr = [11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].splice(NowMonth - 1, 3)
 
     for (let month of monthArr) {
       let year = NowYear
@@ -226,7 +244,13 @@ export default class Ledger extends base {
     if (isTask) {
       let mysApi = new MysApi(ck.uid, ck.ck, { log: false }, this.e?.isSr)
       ledgerInfo = await mysApi.getData("ys_ledger", { month })
-      ledgerInfo = await new MysInfo(this.e).checkCode(ledgerInfo, "ys_ledger", mysApi, { month }, isTask)
+      ledgerInfo = await new MysInfo(this.e).checkCode(
+        ledgerInfo,
+        "ys_ledger",
+        mysApi,
+        { month },
+        isTask,
+      )
     } else {
       ledgerInfo = await MysInfo.get(this.e, "ys_ledger", { month })
     }
@@ -239,12 +263,18 @@ export default class Ledger extends base {
   async ledgerTask(manual) {
     let cks = (await GsCfg.getBingCk(this.e?.isSr ? "sr" : "gs")).ck
     let uids = lodash.map(cks, "uid")
-    let finishTime = moment().add(uids.length * 0.7, "s").format("MM-DD HH:mm:ss")
-    logger.mark(`${this.e?.isSr ? "开拓月历" : "札记"}ck:${uids.length}个，预计需要${this.countTime(uids.length)} ${finishTime} 完成`)
+    let finishTime = moment()
+      .add(uids.length * 0.7, "s")
+      .format("MM-DD HH:mm:ss")
+    logger.mark(
+      `${this.e?.isSr ? "开拓月历" : "札记"}ck:${uids.length}个，预计需要${this.countTime(uids.length)} ${finishTime} 完成`,
+    )
 
     if (manual) {
       await this.e.reply(`开始任务：保存${this.e?.isSr ? "星琼" : "原石"}数据，完成前请勿重复执行`)
-      await this.e.reply(`${this.e?.isSr ? "开拓月历" : "札记"}ck：${uids.length}个\n预计需要：${this.countTime(uids.length)}\n完成时间：${finishTime}`)
+      await this.e.reply(
+        `${this.e?.isSr ? "开拓月历" : "札记"}ck：${uids.length}个\n预计需要：${this.countTime(uids.length)}\n完成时间：${finishTime}`,
+      )
     }
 
     for (const uid of uids) {
@@ -311,15 +341,23 @@ export default class Ledger extends base {
     }
     // console.log(NoteData)
     if (!NoteData || lodash.isEmpty(NoteData)) {
-      this.e.reply(this.e?.isSr ? [ "暂无星琼数据，请先发送 *星琼", segment.button([ { text: "星琼", input: "*星琼" }, ]) ] : [ "暂无原石数据，请先发送 #原石", segment.button([ { text: "原石", input: "#原石" }, ]) ], false, { at: true })
+      this.e.reply(
+        this.e?.isSr
+          ? ["暂无星琼数据，请先发送 *星琼", segment.button([{ text: "星琼", input: "*星琼" }])]
+          : ["暂无原石数据，请先发送 #原石", segment.button([{ text: "原石", input: "#原石" }])],
+        false,
+        { at: true },
+      )
       return false
     }
     NoteData = NoteData[nowYear]
     if (!NoteData) {
-      this.e.reply(`uid：${uid} ${nowYear}年无${this.e?.isSr ? "星琼" : "原石"}统计数据！`, false, { at: true })
+      this.e.reply(`uid：${uid} ${nowYear}年无${this.e?.isSr ? "星琼" : "原石"}统计数据！`, false, {
+        at: true,
+      })
       return false
     }
-    lodash.forEach(NoteData, (val) => {
+    lodash.forEach(NoteData, val => {
       val.year = nowYear
     })
     /** 处理数据 */
@@ -333,7 +371,7 @@ export default class Ledger extends base {
       // 获取总长度
       if (NoteData && Object.keys(NoteData) && Object.keys(NoteData).length > 0) {
         let len = 0
-        Object.keys(NoteData).forEach((year) => {
+        Object.keys(NoteData).forEach(year => {
           let yearData = NoteData[year]
           len += Object.keys(yearData).length
         })
@@ -367,29 +405,30 @@ export default class Ledger extends base {
       allMora: 0,
       primogemsMonth: [],
       moraMonth: [],
-      yearText
+      yearText,
     }
 
     let Primogems = this.e.isSr ? "current_hcoin" : "current_primogems"
     let Mora = this.e.isSr ? "current_rails_pass" : "current_mora"
-    lodash.forEach(NoteData, (val) => {
+    lodash.forEach(NoteData, val => {
       data.allPrimogems += val.month_data[Primogems]
       data.allMora += val.month_data[Mora]
       // 柱状图数据
       if (this.e.isSr)
-        val.data_month = val.data_month.slice(-2, -1) == "0" ? val.data_month.slice(-1) : val.data_month.slice(-2)
+        val.data_month =
+          val.data_month.slice(-2, -1) == "0" ? val.data_month.slice(-1) : val.data_month.slice(-2)
 
       data.primogemsMonth.push({
         value: val.month_data[Primogems],
         month: String(val.data_month),
         year: String(val.year),
-        name: this.e.isSr ? "星琼" : "原石"
+        name: this.e.isSr ? "星琼" : "原石",
       })
       data.moraMonth.push({
         value: (val.month_data[Mora] / 1000).toFixed(0),
         month: String(val.data_month),
         year: String(val.year),
-        name: this.e.isSr ? "专&通票" : "摩拉"
+        name: this.e.isSr ? "专&通票" : "摩拉",
       })
     })
 
@@ -414,7 +453,7 @@ export default class Ledger extends base {
     const groupBy = NoteData.flatMap(i => i.month_data.group_by)
 
     if (this.e.isSr)
-      groupBy.forEach((item) => {
+      groupBy.forEach(item => {
         item.action_id = this.action[item.action]
         item.action = item.action_name.slice(0, 4)
       })
@@ -425,7 +464,7 @@ export default class Ledger extends base {
         pieData[val.action] = {
           num: val.num,
           action: val.action,
-          action_id: val.action_id
+          action_id: val.action_id,
         }
       } else {
         pieData[val.action].num += val.num
@@ -433,10 +472,10 @@ export default class Ledger extends base {
     }
 
     pieData = lodash.flatMap(pieData, item => item)
-    pieData = lodash.orderBy(pieData, [ "num" ], [ "desc" ])
+    pieData = lodash.orderBy(pieData, ["num"], ["desc"])
 
     data.color = []
-    pieData.forEach((item) => {
+    pieData.forEach(item => {
       data.color.push(this.color[item.action_id])
     })
 
@@ -451,7 +490,7 @@ export default class Ledger extends base {
       saveId: this.e.uid,
       uid: this.e.uid,
       ...data,
-      ...this.screenData
+      ...this.screenData,
     }
   }
 }

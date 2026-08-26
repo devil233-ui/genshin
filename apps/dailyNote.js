@@ -13,11 +13,11 @@ export class dailyNote extends plugin {
       event: "message",
       priority: 300,
       rule: [
-{
-        reg: "^#*(原神|星铁)?(体力|树脂|查询体力)$",
-        fnc: "note"
-      }
-]
+        {
+          reg: "^#*(原神|星铁)?(体力|树脂|查询体力)$",
+          fnc: "note",
+        },
+      ],
     })
 
     this.set = gsCfg.getConfig("mys", "set")

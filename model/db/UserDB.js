@@ -11,13 +11,13 @@ const COLUMNS = {
   id: {
     type: Types.STRING,
     autoIncrement: false,
-    primaryKey: true
+    primaryKey: true,
   },
 
   type: {
     type: Types.STRING,
     defaultValue: "qq",
-    notNull: true
+    notNull: true,
   },
 
   // 昵称
@@ -37,20 +37,20 @@ const COLUMNS = {
       } catch (e) {
         data = {}
       }
-      MysUtil.eachGame((game) => {
+      MysUtil.eachGame(game => {
         let ds = data[game] || {}
         ret[game] = {
           uid: ds.uid || "",
-          data: ds.data || {}
+          data: ds.data || {},
         }
       })
       return ret
     },
     set(data) {
       this.setDataValue("games", JSON.stringify(data))
-    }
+    },
   },
-  data: Types.STRING
+  data: Types.STRING,
 }
 
 class UserDB extends BaseModel {
@@ -62,7 +62,7 @@ class UserDB extends BaseModel {
     if (!user) {
       user = await UserDB.build({
         id,
-        type
+        type,
       })
     }
     return user
@@ -71,7 +71,7 @@ class UserDB extends BaseModel {
   async saveDB(user) {
     let db = this
     let ltuids = []
-    lodash.forEach(user.mysUsers, (mys) => {
+    lodash.forEach(user.mysUsers, mys => {
       if (mys.ck && mys.ltuid) {
         ltuids.push(mys.ltuid)
       }
@@ -81,12 +81,12 @@ class UserDB extends BaseModel {
     lodash.forEach(user._games, (gameDs, game) => {
       games[game] = {
         uid: gameDs.uid,
-        data: {}
+        data: {},
       }
       lodash.forEach(gameDs.data, (ds, uid) => {
         games[game].data[uid] = {
           uid: ds.uid,
-          type: ds.type
+          type: ds.type,
         }
       })
     })

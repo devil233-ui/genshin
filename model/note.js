@@ -38,7 +38,7 @@ export default class Note extends base {
       quality: 80,
       ...screenData,
       ...data,
-      ...resUser?.data?.list[0]
+      ...resUser?.data?.list[0],
     }
   }
 
@@ -65,7 +65,7 @@ export default class Note extends base {
       } else if (seconds > 0) {
         resinMaxTime = seconds + "秒"
       }
-      if ((day > 0) || (hours > 0) || (seconds > 0)) {
+      if (day > 0 || hours > 0 || seconds > 0) {
         let total_seconds = 3600 * hours + 60 * minutes + seconds
         const now = new Date()
         const dateTimes = now.getTime() + total_seconds * 1000
@@ -80,31 +80,38 @@ export default class Note extends base {
         resinMaxTime += recoverTimeStr
       }
     }
-    data.bfStamina = data.current_stamina / data.max_stamina * 100 + "%"
+    data.bfStamina = (data.current_stamina / data.max_stamina) * 100 + "%"
     /** 派遣 */
     for (let item of data.expeditions) {
       let d = moment.duration(item.remaining_time, "seconds")
       let day = Math.floor(d.asDays())
       let hours = d.hours()
       let minutes = d.minutes()
-      item.dateTime = ([ day + "天", hours + "时", minutes + "分" ].filter(v => ![ "0天", "0时", "0分" ].includes(v))).join("")
-      item.bfTime = (72000 - item.remaining_time) / 72000 * 100 + "%"
+      item.dateTime = [day + "天", hours + "时", minutes + "分"]
+        .filter(v => !["0天", "0时", "0分"].includes(v))
+        .join("")
+      item.bfTime = ((72000 - item.remaining_time) / 72000) * 100 + "%"
       if (item.avatars.length == 1) {
         item.avatars.push("派遣头像")
       }
     }
     // 标识属性图标~
-    let iconChar = lodash.sample([ "希儿", "白露", "艾丝妲", "布洛妮娅", "姬子", "卡芙卡", "克拉拉", "停云", "佩拉", "黑塔", "希露瓦", "银狼" ])
+    let iconChar = lodash.sample([
+      "希儿",
+      "白露",
+      "艾丝妲",
+      "布洛妮娅",
+      "姬子",
+      "卡芙卡",
+      "克拉拉",
+      "停云",
+      "佩拉",
+      "黑塔",
+      "希露瓦",
+      "银狼",
+    ])
     let char = Character.get(iconChar, "gs")
-    let week = [
-      "星期日",
-      "星期一",
-      "星期二",
-      "星期三",
-      "星期四",
-      "星期五",
-      "星期六"
-    ]
+    let week = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"]
     let day = `${week[moment().day()]}`
     return {
       uid: this.e.uid,
@@ -113,7 +120,7 @@ export default class Note extends base {
       day,
       resinMaxTime,
       nowDay: moment(new Date()).format("YYYY年MM月DD日"),
-      ...data
+      ...data,
     }
   }
 
@@ -166,9 +173,7 @@ export default class Note extends base {
       if (coinDay > 0) {
         coinTime = `${coinDay}天${coinHour}小时${coinMin}分钟`
       } else {
-        let coinDate = moment.unix(
-          nowUnix + Number(data.home_coin_recovery_time)
-        )
+        let coinDate = moment.unix(nowUnix + Number(data.home_coin_recovery_time))
 
         if (coinDate.date() != nowDay) {
           coinTime = `明天 ${coinDate.format("HH:mm")}`
@@ -178,15 +183,7 @@ export default class Note extends base {
       }
     }
 
-    let week = [
-      "星期日",
-      "星期一",
-      "星期二",
-      "星期三",
-      "星期四",
-      "星期五",
-      "星期六"
-    ]
+    let week = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"]
     let day = `${moment().format("MM-DD HH:mm")} ${week[moment().day()]}`
 
     /** 参量质变仪 */
@@ -213,7 +210,7 @@ export default class Note extends base {
       remainedTime,
       coinTime,
       day,
-      ...data
+      ...data,
     }
   }
 }

@@ -19,22 +19,22 @@ export class payLog extends plugin {
       rule: [
         {
           reg: "^#?(充值|消费)(记录|统计)$",
-          fnc: "payLog"
+          fnc: "payLog",
         },
         {
           reg: "^#?更新(充值|消费)(记录|统计)$",
-          fnc: "updatePayLog"
+          fnc: "updatePayLog",
         },
         {
           // 优先级高于抽卡记录，但是发送抽卡链接时不会抢指令，对比过米游社链接和抽卡链接，该字段为米游社链接字段
           reg: "(.*)(user-game-search|bill-record-user|customer-claim|player-log|user.mihoyo.com)(.*)",
-          fnc: "getAuthKey"
+          fnc: "getAuthKey",
         },
         {
           reg: "^#?(充值|消费)(记录|统计)帮助$",
-          fnc: "payLogHelp"
-        }
-      ]
+          fnc: "payLogHelp",
+        },
+      ],
     })
   }
 
@@ -125,7 +125,9 @@ export class payLog extends plugin {
       if (mainUid) uid = mainUid
       // 读米游社链接的authkey
       // 读抽卡链接的authkey
-      this.authKey = await redis.get(`Yz:genshin:payLog:${uid}`) || await redis.get(`Yz:genshin:gachaLog:url:${uid}`)
+      this.authKey =
+        (await redis.get(`Yz:genshin:payLog:${uid}`)) ||
+        (await redis.get(`Yz:genshin:gachaLog:url:${uid}`))
       if (this.authKey) {
         this.reply("正在获取数据,可能需要30s")
         let imgData = await new PayData(this.authKey).filtrateData()
@@ -139,21 +141,23 @@ export class payLog extends plugin {
         return true
       } else {
         this.reply([
-"请私聊发送米游社链接，可以发送【#充值统计帮助】查看链接教程",
-        segment.button([ { text: "充值帮助", callback: "#充值统计帮助" }, ])
-])
+          "请私聊发送米游社链接，可以发送【#充值统计帮助】查看链接教程",
+          segment.button([{ text: "充值帮助", callback: "#充值统计帮助" }]),
+        ])
       }
     } else {
       this.reply([
-"请私聊发送米游社链接，可以发送【#充值统计帮助】查看链接教程",
-      segment.button([ { text: "充值帮助", callback: "#充值统计帮助" }, ])
-])
+        "请私聊发送米游社链接，可以发送【#充值统计帮助】查看链接教程",
+        segment.button([{ text: "充值帮助", callback: "#充值统计帮助" }]),
+      ])
     }
     return true
   }
 
   payLogHelp(e) {
-    e.reply("安卓教程： https://b23.tv/K5qfLad\n苹果用户可【先】发送最新获取的抽卡记录链接，【再】发送【#充值记录】或【#更新充值统计】来获取（注：通过抽卡链接获取充值记录大概率已失效）")
+    e.reply(
+      "安卓教程： https://b23.tv/K5qfLad\n苹果用户可【先】发送最新获取的抽卡记录链接，【再】发送【#充值记录】或【#更新充值统计】来获取（注：通过抽卡链接获取充值记录大概率已失效）",
+    )
   }
 
   /** 判断主uid，若没有则返回false,有则返回主uid */

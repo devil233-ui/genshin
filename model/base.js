@@ -20,7 +20,7 @@ export default class base {
   async renderImg(tpl, data, cfg = {}) {
     return Common.render("genshin", `html/${tpl}`, data, {
       ...cfg,
-      e: this.e
+      e: this.e,
     })
   }
 
@@ -48,7 +48,7 @@ export default class base {
       yzVersion: `v${Version.yunzai}`,
       yzName: yunzaiName,
       genshinLayout: layoutPath + "genshin.html",
-      defaultLayout: layoutPath + "default.html"
+      defaultLayout: layoutPath + "default.html",
     }
     if (this.e?.isSr) {
       let char = Character.get("黑天鹅", "sr")

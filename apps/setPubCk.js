@@ -17,14 +17,14 @@ export class setPubCk extends plugin {
         {
           reg: /^#配置c(oo)?k(ie)?$|^#*配置公共查询c(oo)?k(ie)?$/i,
           fnc: "setPubCk",
-          permission: "master"
+          permission: "master",
         },
         {
           reg: "^#使用(全部|用户)ck$",
           fnc: "setUserCk",
-          permission: "master"
-        }
-      ]
+          permission: "master",
+        },
+      ],
     })
 
     this.file = "./plugins/genshin/config/mys.pubCk.yaml"
@@ -41,7 +41,9 @@ export class setPubCk extends plugin {
   async pubCk() {
     let msg = this.e.msg
 
-    if (!(/(ltoken|ltoken_v2)/.test(this.e.msg) && /(ltuid|ltmid_v2|account_mid_v2)/.test(this.e.msg))) {
+    if (!(
+      /(ltoken|ltoken_v2)/.test(this.e.msg) && /(ltuid|ltmid_v2|account_mid_v2)/.test(this.e.msg)
+    )) {
       this.e.reply("cookie错误，请发送正确的cookie")
       return true
     }
@@ -50,23 +52,34 @@ export class setPubCk extends plugin {
 
     let ck = msg.replace(/#|"|"/g, "")
     let param = {}
-    ck.split(";").forEach((v) => {
+    ck.split(";").forEach(v => {
       // cookie_token_v2,ltoken_v2值也可能有=
       // let tmp = lodash.trim(v).split("=")
-      let tmp = lodash.trim(v);
-      let index = tmp.indexOf("=");
-      param[tmp.slice(0,index)] = tmp.slice(index+1);
+      let tmp = lodash.trim(v)
+      let index = tmp.indexOf("=")
+      param[tmp.slice(0, index)] = tmp.slice(index + 1)
     })
 
     this.ck = ""
     lodash.forEach(param, (v, k) => {
-      if ([ "ltoken", "ltuid", "cookie_token", "account_id", "cookie_token_v2", "account_mid_v2", "ltmid_v2", "ltoken_v2" ].includes(k)) {
+      if (
+        [
+          "ltoken",
+          "ltuid",
+          "cookie_token",
+          "account_id",
+          "cookie_token_v2",
+          "account_mid_v2",
+          "ltmid_v2",
+          "ltoken_v2",
+        ].includes(k)
+      ) {
         this.ck += `${k}=${v};`
       }
     })
 
     /** 检查ck是否失效 */
-    if (!await this.checkCk()) {
+    if (!(await this.checkCk())) {
       logger.mark(`配置公共cookie错误：${this.checkMsg || "cookie错误"}`)
       await this.e.reply(`配置公共cookie错误：${this.checkMsg || "cookie错误"}`)
       return
@@ -74,7 +87,11 @@ export class setPubCk extends plugin {
 
     this.ltuid = param.ltuid
     // 判断是否是v2版ck
-    if (param.cookie_token_v2 && (param.account_mid_v2 || param.ltoken_v2) && !(/(\d{4,9})/g).test(this.ltuid)) {
+    if (
+      param.cookie_token_v2 &&
+      (param.account_mid_v2 || param.ltoken_v2) &&
+      !/(\d{4,9})/g.test(this.ltuid)
+    ) {
       // 获取米游社通行证id
       let userFullInfo = await this.getUserInfo()
       if (userFullInfo?.data?.user_info) {
@@ -125,7 +142,7 @@ export class setPubCk extends plugin {
       const that = this
       let url = {
         mys: "https://bbs-api.mihoyo.com/user/wapi/getUserFullInfo?gids=2",
-        hoyolab: ""
+        hoyolab: "",
       }
       let res = await fetch(url[server], {
         method: "get",
@@ -135,8 +152,8 @@ export class setPubCk extends plugin {
           Connection: "keep-alive",
           Host: "bbs-api.mihoyo.com",
           Origin: "https://m.bbs.mihoyo.com",
-          Referer: " https://m.bbs.mihoyo.com/"
-        }
+          Referer: " https://m.bbs.mihoyo.com/",
+        },
       })
       if (!res.ok) return res
       res = await res.json()

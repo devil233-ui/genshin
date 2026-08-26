@@ -21,7 +21,7 @@ class GsCfg {
     /** 监听文件 */
     this.watcher = { config: {}, defSet: {} }
 
-    this.ignore = [ "mys.pubCk", "gacha.set", "bot.help", "role.name" ]
+    this.ignore = ["mys.pubCk", "gacha.set", "bot.help", "role.name"]
   }
 
   get element() {
@@ -58,9 +58,7 @@ class GsCfg {
     if (this[type][key]) return this[type][key]
 
     try {
-      this[type][key] = YAML.parse(
-        fs.readFileSync(file, "utf8")
-      )
+      this[type][key] = YAML.parse(fs.readFileSync(file, "utf8"))
     } catch (error) {
       logger.error(`[${app}][${name}] 格式错误 ${error}`)
       return false
@@ -103,12 +101,12 @@ class GsCfg {
     let ckQQ = {}
     let noteCk = {}
 
-    await NoteUser.forEach(async function(user) {
+    await NoteUser.forEach(async function (user) {
       let qq = user.qq + ""
       let tmp = {}
-      lodash.forEach(user.mysUsers, (mys) => {
+      lodash.forEach(user.mysUsers, mys => {
         let uids = mys.getUids(game)
-        lodash.forEach(uids, (uid) => {
+        lodash.forEach(uids, uid => {
           let ckData = mys.getCkInfo(game)
           ckData.qq = qq
           if (!ck[uid]) {
@@ -136,7 +134,6 @@ class GsCfg {
     let char = Character.get(keyword, isSr ? "sr" : "gs")
     return char?.id || false
   }
-
 
   /**
    * 原神角色武器长名称缩写
@@ -199,10 +196,9 @@ class GsCfg {
       uid,
       alias,
       game: char.game,
-      name: char.name
+      name: char.name,
     }
   }
-
 
   cpCfg(app, name) {
     if (!fs.existsSync("./plugins/genshin/config")) {
@@ -248,7 +244,6 @@ class GsCfg {
     }
   }
 
-
   // 仅供内部调用
   _roleNameToID(keyword, isSr) {
     if (isSr) this.isSr = isSr
@@ -275,7 +270,7 @@ class GsCfg {
       roleId,
       uid,
       alias,
-      name: this.roleIdToName(roleId)
+      name: this.roleIdToName(roleId),
     }
   }
 
@@ -321,7 +316,6 @@ class GsCfg {
   getAbbr() {
     console.log("gsCfg.getAbbr() 已经废弃")
   }
-
 }
 
 export default new GsCfg()

@@ -15,17 +15,17 @@ export class abbrSet extends plugin {
       rule: [
         {
           reg: "^#(星铁)?(设置|配置)(.*)(别名|昵称)$",
-          fnc: "abbr"
+          fnc: "abbr",
         },
         {
           reg: "^#(星铁)?删除(别名|昵称)(.*)$",
-          fnc: "delAbbr"
+          fnc: "delAbbr",
         },
         {
           reg: "^#(星铁)?(.*)(别名|昵称)$",
-          fnc: "abbrList"
-        }
-      ]
+          fnc: "abbrList",
+        },
+      ],
     })
     this.isSr = false
     this.file = "./plugins/genshin/config/role.name.yaml"
@@ -33,14 +33,17 @@ export class abbrSet extends plugin {
 
   async init() {
     if (!fs.existsSync(this.file)) {
-      fs.writeFileSync(this.file, `神里绫华:
+      fs.writeFileSync(
+        this.file,
+        `神里绫华:
   - 龟龟
-  - 小乌龟`)
+  - 小乌龟`,
+      )
     }
   }
 
   async abbr() {
-    if (!await this.checkAuth()) return
+    if (!(await this.checkAuth())) return
     let role = gsCfg.getRole(this.e.msg, "#|星铁|设置|配置|别名|昵称", this.e.isSr)
     if (!role) return false
     this.e.role = role
@@ -136,7 +139,7 @@ export class abbrSet extends plugin {
       return true
     }
 
-    nameArr[role.name] = nameArr[role.name].filter((v) => {
+    nameArr[role.name] = nameArr[role.name].filter(v => {
       if (v == role.alias) return false
       return v
     })
@@ -154,7 +157,7 @@ export class abbrSet extends plugin {
     let name = gsCfg.getdefSet("role", this.e.isSr ? "sr_name" : "name")[role.roleId]
     let nameUser = gsCfg.getConfig("role", "name")[role.name] ?? []
 
-    let list = lodash.uniq([ ...name, ...nameUser ])
+    let list = lodash.uniq([...name, ...nameUser])
 
     let msg = []
     for (let i in list) {
@@ -162,7 +165,11 @@ export class abbrSet extends plugin {
       msg.push(`${num}.${list[i]}`)
     }
 
-    msg = await common.makeForwardMsg(this.e, [ msg.join("\n") ], `${role.name}别名，${list.length}个`)
+    msg = await common.makeForwardMsg(
+      this.e,
+      [msg.join("\n")],
+      `${role.name}别名，${list.length}个`,
+    )
 
     await this.e.reply(msg)
   }

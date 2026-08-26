@@ -31,7 +31,7 @@ export default class RoleBag extends base {
       ...this.screenData,
       saveId: this.e.uid,
       uid: this.e.uid,
-      ...this.dealData(avatars)
+      ...this.dealData(avatars),
     }
 
     return data
@@ -63,7 +63,11 @@ export default class RoleBag extends base {
         continue
       }
 
-      val.sort = rarity * 100000 + val.actived_constellation_num * 10000 + val.level * 100 + (val.id - 10000000)
+      val.sort =
+        rarity * 100000 +
+        val.actived_constellation_num * 10000 +
+        val.level * 100 +
+        (val.id - 10000000)
 
       // 增加神里排序
       if (val.id == 10000002) {
@@ -96,7 +100,7 @@ export default class RoleBag extends base {
       list.push(val)
     }
 
-    list = lodash.chain(list).orderBy([ "sortLevel" ], [ "desc" ]).orderBy([ "sort" ], [ "desc" ]).value()
+    list = lodash.chain(list).orderBy(["sortLevel"], ["desc"]).orderBy(["sort"], ["desc"]).value()
 
     let num = list.length
 

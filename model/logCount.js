@@ -22,13 +22,24 @@ export default class LogCount extends base {
       { type: 21, typeName: "角色联动" },
       { type: 22, typeName: "光锥联动" },
       { type: 500, typeName: "集录" },
-      { type: 200, typeName: "常驻" }
+      { type: 200, typeName: "常驻" },
     ]
 
     /** 五星角色 */
-    this.role5 = [ "刻晴", "莫娜", "七七", "迪卢克", "琴", "提纳里", "迪希雅", "梦见月瑞希" ]
+    this.role5 = ["刻晴", "莫娜", "七七", "迪卢克", "琴", "提纳里", "迪希雅", "梦见月瑞希"]
     /** 五星武器 */
-    this.weapon5 = [ "阿莫斯之弓", "天空之翼", "天空之卷", "天空之脊", "天空之傲", "天空之刃", "四风原典", "和璞鸢", "狼的末路", "风鹰剑" ]
+    this.weapon5 = [
+      "阿莫斯之弓",
+      "天空之翼",
+      "天空之卷",
+      "天空之脊",
+      "天空之傲",
+      "天空之刃",
+      "四风原典",
+      "和璞鸢",
+      "狼的末路",
+      "风鹰剑",
+    ]
     if (e.isSr) {
       /** 绑定的uid */
       this.uidKey = `Yz:srJson:mys:qq-uid:${this.userId}`
@@ -38,12 +49,31 @@ export default class LogCount extends base {
         { type: 11, typeName: "角色" },
         { type: 12, typeName: "光锥" },
         { type: 1, typeName: "常驻" },
-        { type: 2, typeName: "新手" }
+        { type: 2, typeName: "新手" },
       ]
       /** 五星角色 */
-      this.role5 = [ "姬子", "杰帕德", "彦卿", "白露", "瓦尔特", "克拉拉", "布洛妮娅", "希儿", "刃", "符玄" ]
+      this.role5 = [
+        "姬子",
+        "杰帕德",
+        "彦卿",
+        "白露",
+        "瓦尔特",
+        "克拉拉",
+        "布洛妮娅",
+        "希儿",
+        "刃",
+        "符玄",
+      ]
       /** 五星武器 */
-      this.weapon5 = [ "银河铁道之夜", "无可取代的东西", "但战斗还未结束", "以世界之名", "制胜的瞬间", "如泥酣眠", "时节不居" ]
+      this.weapon5 = [
+        "银河铁道之夜",
+        "无可取代的东西",
+        "但战斗还未结束",
+        "以世界之名",
+        "制胜的瞬间",
+        "如泥酣眠",
+        "时节不居",
+      ]
     }
   }
 
@@ -85,12 +115,15 @@ export default class LogCount extends base {
     return {
       quality: 80,
       ...this.screenData,
-      ...data
+      ...data,
     }
   }
 
   getPool() {
-    let msg = this.e.msg.replace(/#|抽卡|记录|祈愿|分析|池|原神|星铁|崩坏星穹铁道|铁道|抽卡|统计|池/g, "")
+    let msg = this.e.msg.replace(
+      /#|抽卡|记录|祈愿|分析|池|原神|星铁|崩坏星穹铁道|铁道|抽卡|统计|池/g,
+      "",
+    )
     this.type = this.e.isSr ? 11 : 301
     this.typeName = "角色"
     switch (msg) {
@@ -135,20 +168,32 @@ export default class LogCount extends base {
 
   async getUid() {
     if (!fs.existsSync(this.path)) {
-      this.e.reply(`暂无抽卡记录\n【星铁抽卡记录不能直接更新，请发送 #抽卡帮助 查看方法自提链接】\n${this.e?.isSr ? "*" : "#"}记录帮助，查看配置说明`, false, { at: true })
+      this.e.reply(
+        `暂无抽卡记录\n【星铁抽卡记录不能直接更新，请发送 #抽卡帮助 查看方法自提链接】\n${this.e?.isSr ? "*" : "#"}记录帮助，查看配置说明`,
+        false,
+        { at: true },
+      )
       return false
     }
 
     let logs = fs.readdirSync(this.path)
 
     if (lodash.isEmpty(logs)) {
-      this.e.reply(`暂无抽卡记录\n【星铁抽卡记录不能直接更新，请发送 #抽卡帮助 查看方法自提链接】\n${this.e?.isSr ? "*" : "#"}记录帮助，查看配置说明`, false, { at: true })
+      this.e.reply(
+        `暂无抽卡记录\n【星铁抽卡记录不能直接更新，请发送 #抽卡帮助 查看方法自提链接】\n${this.e?.isSr ? "*" : "#"}记录帮助，查看配置说明`,
+        false,
+        { at: true },
+      )
       return false
     }
 
     if (!this.uid) {
       this.e.at = false
-      this.uid = this?.e?.isSr ? this.e.user?._games?.sr?.uid : this.e.user?._games?.gs?.uid || await this.e.runtime.getUid(this.e) || await redis.get(this.uidKey)
+      this.uid = this?.e?.isSr
+        ? this.e.user?._games?.sr?.uid
+        : this.e.user?._games?.gs?.uid ||
+          (await this.e.runtime.getUid(this.e)) ||
+          (await redis.get(this.uidKey))
     }
 
     /** 记录有绑定的uid */
@@ -167,14 +212,14 @@ export default class LogCount extends base {
       let tmp = fs.statSync(json)
       uidArr.push({
         uid,
-        mtimeMs: tmp.mtimeMs
+        mtimeMs: tmp.mtimeMs,
       })
     }
     if (uidArr.length <= 0) {
       return false
     }
 
-    uidArr = uidArr.sort(function(a, b) {
+    uidArr = uidArr.sort(function (a, b) {
       return b.mtimeMs - a.mtimeMs
     })
 
@@ -201,7 +246,7 @@ export default class LogCount extends base {
 
     all = all.reverse()
 
-    let poolCfg = [ ...this.getPoolCfg() ].reverse()
+    let poolCfg = [...this.getPoolCfg()].reverse()
 
     let sortName
     if (this.type == 301) {
@@ -228,7 +273,7 @@ export default class LogCount extends base {
               name: poolCfg[i].name,
               five: poolCfg[i].five,
               start: moment(poolCfg[i].from, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD"),
-              end: moment(poolCfg[i].to, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD")
+              end: moment(poolCfg[i].to, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD"),
             }
           } else {
             pool[poolCfg[i].start].count++
@@ -241,7 +286,7 @@ export default class LogCount extends base {
                 rank_type: row.rank_type,
                 item_type: row.item_type,
                 time,
-                num: fiveNum + 1
+                num: fiveNum + 1,
               })
             }
             fiveNum = 0
@@ -253,7 +298,7 @@ export default class LogCount extends base {
               rank_type: row.rank_type,
               item_type: row.item_type,
               time,
-              num: fourNum + 1
+              num: fourNum + 1,
             })
             fourNum = 0
             fiveNum++
@@ -284,9 +329,7 @@ export default class LogCount extends base {
       line++
       pool[i].role = {}
 
-      pool[i].five = pool[i].five
-        .map((v) => sortName[v] ?? v)
-        .join("、")
+      pool[i].five = pool[i].five.map(v => sortName[v] ?? v).join("、")
       for (let val of pool[i].list) {
         if (!pool[i].role[val.name]) {
           pool[i].role[val.name] = {
@@ -294,7 +337,7 @@ export default class LogCount extends base {
             icon: GachaLog.getIcon(val.name, val.item_type, game),
             rank_type: val.rank_type,
             item_type: val.item_type,
-            count: 1
+            count: 1,
           }
         } else {
           pool[i].role[val.name].count++
@@ -318,14 +361,14 @@ export default class LogCount extends base {
       }
 
       pool[i].roleNum = Object.keys(pool[i].role).length
-      pool[i].role = lodash.orderBy(pool[i].role, [ "sort" ], [ "desc" ])
+      pool[i].role = lodash.orderBy(pool[i].role, ["sort"], ["desc"])
 
       res.push(pool[i])
       line += Math.ceil(pool[i].roleNum / 6)
 
-    //   if (this.e.isGroup && line >= 12) {
-    //     break
-    //   }
+      //   if (this.e.isGroup && line >= 12) {
+      //     break
+      //   }
     }
 
     // if (line - pool.length <= 0) {
@@ -337,7 +380,7 @@ export default class LogCount extends base {
       uid: this.uid,
       pool: res,
       typeName: this.typeName,
-      isGroup: this.e.isGroup
+      isGroup: this.e.isGroup,
     }
   }
 }

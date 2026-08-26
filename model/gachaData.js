@@ -62,7 +62,7 @@ export default class GachaData extends base {
       quality: 80,
       ...this.screenData,
       ...this.lotteryInfo(),
-      list
+      list,
     }
 
     return data
@@ -86,9 +86,10 @@ export default class GachaData extends base {
   /** 奖池数据 */
   async getPool() {
     let poolArr = gsCfg.getdefSet("gacha", "pool")
-    poolArr = [ ...poolArr ].reverse()
+    poolArr = [...poolArr].reverse()
     /** 获取设置卡池 */
-    let NowPool = poolArr.find((val) => new Date().getTime() <= new Date(val.endTime).getTime()) || poolArr.pop()
+    let NowPool =
+      poolArr.find(val => new Date().getTime() <= new Date(val.endTime).getTime()) || poolArr.pop()
     this.NowPool = NowPool
 
     if (this.type == "weapon") {
@@ -100,7 +101,7 @@ export default class GachaData extends base {
         role4: this.def.role4,
         weapon4,
         up5: NowPool.weapon5,
-        five: weapon5
+        five: weapon5,
       }
     }
 
@@ -121,7 +122,7 @@ export default class GachaData extends base {
         /** 五星 */
         up5,
         /** 常驻五星 */
-        five: role5
+        five: role5,
       }
     }
 
@@ -132,7 +133,7 @@ export default class GachaData extends base {
         weapon4: this.def.weapon4,
         up5: [],
         five: this.def.role5,
-        fiveW: this.def.weapon5
+        fiveW: this.def.weapon5,
       }
     }
 
@@ -165,10 +166,10 @@ export default class GachaData extends base {
           /** 命定值 */
           lifeNum: 0,
           /** 定轨 0-取消 1-武器1 2-武器2 */
-          type: 1
+          type: 1,
         },
         today: { star: [], expire: this.getEnd().end4, num: 0, weaponNum: 0 },
-        week: { num: 0, expire: this.getWeekEnd() }
+        week: { num: 0, expire: this.getWeekEnd() },
       }
     }
 
@@ -201,7 +202,11 @@ export default class GachaData extends base {
     if (save) this.saveUser()
 
     /** 排序 星级，角色，武器 */
-    this.res = lodash.orderBy(this.res, [ "star", "type", "have", "index" ], [ "desc", "asc", "asc", "asc" ])
+    this.res = lodash.orderBy(
+      this.res,
+      ["star", "type", "have", "index"],
+      ["desc", "asc", "asc", "asc"],
+    )
 
     return this.res
   }
@@ -298,7 +303,7 @@ export default class GachaData extends base {
       isBing,
       have,
       imgFile: GachaData.getImg(tmpName, type),
-      rand: lodash.random(1, 7)
+      rand: lodash.random(1, 7),
     })
 
     return true
@@ -369,7 +374,7 @@ export default class GachaData extends base {
       element: this.ele[tmpName] || "",
       index: this.index,
       imgFile: GachaData.getImg(tmpName, type),
-      have
+      have,
     })
 
     return true
@@ -384,7 +389,7 @@ export default class GachaData extends base {
       type: "weapon",
       element: this.ele[tmpName] || "",
       index: this.index,
-      imgFile: GachaData.getImg(tmpName, "weapon")
+      imgFile: GachaData.getImg(tmpName, "weapon"),
     })
 
     return true
@@ -481,7 +486,7 @@ export default class GachaData extends base {
       poolName,
       isWeapon: this.type == "weapon",
       bingWeapon: this.getBingWeapon(true),
-      lifeNum: this.user[this.type]?.lifeNum || 0
+      lifeNum: this.user[this.type]?.lifeNum || 0,
     }
 
     logger.debug(`[${poolName}] [五星数：${nowFive}] [${info}] [定轨：${res.lifeNum}]`)

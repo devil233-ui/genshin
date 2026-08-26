@@ -43,7 +43,7 @@ export class calendar extends plugin {
     // 按游戏路由模板
     const tpl = "html/calendar/calendar-" + game
 
-    this.reply([ await this.renderImg("genshin", tpl, data, { retType: "base64", scale: 2 }) ])
+    this.reply([await this.renderImg("genshin", tpl, data, { retType: "base64", scale: 2 })])
     return true
   }
 }

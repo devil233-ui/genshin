@@ -32,7 +32,7 @@ export default class WeaponModel extends base {
       ...this.screenData,
       saveId: this.e.uid,
       uid: this.e.uid,
-      ...this.dealData(avatars)
+      ...this.dealData(avatars),
     }
 
     return data
@@ -51,7 +51,7 @@ export default class WeaponModel extends base {
       双手剑: 0,
       长柄武器: 0,
       弓: 0,
-      法器: 0
+      法器: 0,
     }
 
     for (let val of avatars) {
@@ -105,12 +105,12 @@ export default class WeaponModel extends base {
         level: val.weapon.level,
         affix_level: val.weapon.affix_level,
         firstSort,
-        sort
+        sort,
       })
     }
 
     // 重新排序
-    ret = lodash.chain(ret).orderBy([ "firstSort" ], [ "desc" ]).orderBy([ "sort" ], [ "desc" ]).value()
+    ret = lodash.chain(ret).orderBy(["firstSort"], ["desc"]).orderBy(["sort"], ["desc"]).value()
 
     return { list: ret, count }
   }

@@ -9,13 +9,12 @@ export class buddy extends plugin {
       event: "message",
       priority: 300,
       rule: [
-{
-        reg: "^#*绝区零?(邦布|人偶)$",
-        fnc: "note"
-      }
-]
+        {
+          reg: "^#*绝区零?(邦布|人偶)$",
+          fnc: "note",
+        },
+      ],
     })
-
   }
 
   async note() {
@@ -23,6 +22,6 @@ export class buddy extends plugin {
     if (!data) return
 
     /** 生成图片 */
-    this.renderImg("genshin", "ZZZero/html/buddy/buddy", data)
+    this.renderImg("genshin", `ZZZero/html/buddy/buddy`, data)
   }
 }

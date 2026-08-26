@@ -6,14 +6,14 @@ const COLUMNS = {
   // 用户ID，qq为数字
   ltuid: {
     type: Types.INTEGER,
-    primaryKey: true
+    primaryKey: true,
   },
 
   // MysUser类型，mys / hoyolab
   type: {
     type: Types.STRING,
     defaultValue: "mys",
-    notNull: true
+    notNull: true,
   },
 
   // CK
@@ -33,8 +33,8 @@ const COLUMNS = {
     },
     set(uids) {
       this.setDataValue("uids", JSON.stringify(uids))
-    }
-  }
+    },
+  },
 }
 
 class MysUserDB extends BaseModel {
@@ -43,7 +43,7 @@ class MysUserDB extends BaseModel {
     let mys = await MysUserDB.findByPk(ltuid)
     if (!mys && create) {
       mys = await MysUserDB.build({
-        ltuid
+        ltuid,
       })
     }
     return mys || false

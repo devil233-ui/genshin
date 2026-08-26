@@ -4,7 +4,7 @@ const files = fs.readdirSync("./plugins/genshin/apps").filter(file => file.endsW
 
 let ret = []
 
-files.forEach((file) => {
+files.forEach(file => {
   ret.push(import(`./apps/${file}`))
 })
 

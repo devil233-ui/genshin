@@ -37,7 +37,7 @@ export default class NoteUser extends BaseModel {
   get ckUids() {
     console.warn("NoteUser.ckUids 默认返回原神UID，可更改为 user.getCkUidList(game)")
     let uids = this.getCkUidList("gs")
-    return lodash.map(uids, (ds) => ds.uid)
+    return lodash.map(uids, ds => ds.uid)
   }
 
   /**
@@ -57,13 +57,12 @@ export default class NoteUser extends BaseModel {
         cks[ltuid] = cks[ltuid] || {
           ckData: mys.getCkInfo(game),
           ck: mys.ck,
-          uids: mys.getUids(game)
+          uids: mys.getUids(game),
         }
       }
     }
     return cks
   }
-
 
   /**
    * End OLD Func }}
@@ -107,7 +106,7 @@ export default class NoteUser extends BaseModel {
 
   static async forEach(fn) {
     let dbs = await UserDB.findAll()
-    await Data.forEach(dbs, async(db) => {
+    await Data.forEach(dbs, async db => {
       let user = await NoteUser.create(db.id, db)
       return await fn(user)
     })
@@ -144,7 +143,6 @@ export default class NoteUser extends BaseModel {
     await this.db.saveDB(this)
   }
 
-
   getUidMapList(game = "gs", type = "all") {
     if (this._map?.[game]?.[type]) {
       return this._map[game][type]
@@ -152,11 +150,11 @@ export default class NoteUser extends BaseModel {
     game = this.gameKey(game)
     let uidMap = {}
     let uidList = []
-    lodash.forEach(this.mysUsers, (mys) => {
+    lodash.forEach(this.mysUsers, mys => {
       if (!mys) {
         return
       }
-      lodash.forEach(mys.uids[game] || [], (uid) => {
+      lodash.forEach(mys.uids[game] || [], uid => {
         uid = uid + ""
         if (uid && !uidMap[uid]) {
           uidMap[uid] = mys.getUidData(uid, game)
@@ -166,7 +164,7 @@ export default class NoteUser extends BaseModel {
     })
     if (type === "all") {
       let gameDs = this.getGameDs(game)
-      lodash.forEach(gameDs.data, (ds) => {
+      lodash.forEach(gameDs.data, ds => {
         if (ds.uid && !uidMap[ds.uid]) {
           uidMap[ds.uid] = ds
           uidList.push(ds)
@@ -178,11 +176,10 @@ export default class NoteUser extends BaseModel {
     this._map[game] = this._map[game] || {}
     this._map[game][type] = {
       map: uidMap,
-      list: uidList
+      list: uidList,
     }
     return this._map[game][type]
   }
-
 
   getUidData(uid = "", game = "gs") {
     if (!uid) {
@@ -272,12 +269,11 @@ export default class NoteUser extends BaseModel {
     if (!this._games[game]) {
       this._games[game] = {
         uid: "",
-        data: {}
+        data: {},
       }
     }
     return this._games[game]
   }
-
 
   /**
    * 设置当前用户的绑定uid
@@ -316,7 +312,7 @@ export default class NoteUser extends BaseModel {
   async addMysUser(mysUser) {
     this.mysUsers[mysUser.ltuid] = mysUser
     this._map = false
-    MysUtil.eachGame((game) => {
+    MysUtil.eachGame(game => {
       let uid = mysUser.getUid(game)
       if (uid && this.getUid(game) == "") {
         this.setMainUid(uid, game, false)
@@ -344,7 +340,7 @@ export default class NoteUser extends BaseModel {
   }
 
   async eachMysUser(fn) {
-    await Data.forEach(this.mysUsers, async(mys, ltuid) => {
+    await Data.forEach(this.mysUsers, async (mys, ltuid) => {
       if (!mys) {
         return true
       }
@@ -388,7 +384,7 @@ export default class NoteUser extends BaseModel {
       }
       ret.push({
         ltuid,
-        ...checkRet
+        ...checkRet,
       })
     }
     return ret

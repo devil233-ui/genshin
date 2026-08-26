@@ -6,7 +6,7 @@ const { Types } = BaseModel
 const COLUMNS = {
   // 用户ID，qq为数字
   userId: {
-    type: Types.STRING
+    type: Types.STRING,
   },
   game: Types.STRING,
   uid: Types.STRING,
@@ -20,7 +20,7 @@ const COLUMNS = {
       } catch (e) {
         data = []
       }
-      lodash.forEach(data, (ds) => {
+      lodash.forEach(data, ds => {
         if (ds.uid) {
           ret[ds.uid] = ds
         }
@@ -29,13 +29,11 @@ const COLUMNS = {
     },
     set(data) {
       this.setDataValue("data", JSON.stringify(lodash.values(data)))
-    }
-  }
+    },
+  },
 }
 
-class UserGameDB extends BaseModel {
-
-}
+class UserGameDB extends BaseModel {}
 
 BaseModel.initDB(UserGameDB, COLUMNS)
 await UserGameDB.sync()

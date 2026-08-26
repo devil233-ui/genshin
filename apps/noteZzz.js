@@ -9,13 +9,12 @@ export class dailyNote extends plugin {
       event: "message",
       priority: 300,
       rule: [
-{
-        reg: "^#*绝区零?(体力|树脂|查询体力)$",
-        fnc: "note"
-      }
-]
+        {
+          reg: "^#*绝区零?(体力|树脂|查询体力)$",
+          fnc: "note",
+        },
+      ],
     })
-
   }
 
   /** #体力 */
@@ -24,6 +23,6 @@ export class dailyNote extends plugin {
     if (!data) return
 
     /** 生成图片 */
-    this.renderImg("genshin", "ZZZero/html/dailyNote/note", data)
+    this.renderImg("genshin", `ZZZero/html/dailyNote/note`, data)
   }
 }

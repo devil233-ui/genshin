@@ -33,13 +33,13 @@ export default class Deck extends base {
       saveId: this.e.uid,
       nickname: res.data.nickname,
       level: res.data.level,
-      Data
+      Data,
     }
     return data
   }
   async getcard(id) {
     let res = {}
-    for (let api of [ "basicInfo", "avatar_cardList", "action_cardList" ]) {
+    for (let api of ["basicInfo", "avatar_cardList", "action_cardList"]) {
       if ((id == 2 && api == "avatar_cardList") || (id == 1 && api == "action_cardList")) continue
       res[api] = (await MysInfo.get(this.e, api)).data
     }
@@ -50,9 +50,8 @@ export default class Deck extends base {
       ...this.screenData,
       uid: this.e.uid,
       saveId: this.e.uid,
-      ...res
+      ...res,
     }
     return data
   }
-
 }

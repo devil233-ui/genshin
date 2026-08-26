@@ -2,7 +2,7 @@ import moment from "moment"
 import BaseModel from "./BaseModel.js"
 import MysUtil from "./MysUtil.js"
 
-const servs = [ "mys", "hoyolab" ]
+const servs = ["mys", "hoyolab"]
 // 超时时间不必精确，直接定24小时即可
 const EX = 3600 * 24
 const redisKeyRoot = "Yz:cache:"
@@ -90,10 +90,10 @@ export default class DailyCache extends BaseModel {
 
   // 内部方法，用于encode value
   static encodeValue(value) {
-    if (typeof (value) === "object") {
+    if (typeof value === "object") {
       return JSON.stringify(value) || ""
     }
-    if (typeof (value) === "undefined") {
+    if (typeof value === "undefined") {
       return ""
     }
     return "" + value
@@ -221,7 +221,7 @@ export default class DailyCache extends BaseModel {
     await redis.zAdd(tableKey, { score: key, value: item + "" })
 
     // 同时更新数量，用于数量统计
-    let count = await this.zCount(table, key) || 0
+    let count = (await this.zCount(table, key)) || 0
     const countKey = this.getTableKey(table, "count")
     await redis.zAdd(countKey, { score: count, value: key + "" })
     await this.exTable(this.getTableKey(table), true)

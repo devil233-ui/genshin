@@ -14,13 +14,13 @@ export class gacha extends plugin {
       rule: [
         {
           reg: "^#*(10|[武器池常驻]*[十]+|抽|单)[连抽卡奖][123武器池常驻]*$",
-          fnc: "gacha"
+          fnc: "gacha",
         },
         {
           reg: "(^#*定轨|^#定轨(.*))$",
-          fnc: "weaponBing"
-        }
-      ]
+          fnc: "weaponBing",
+        },
+      ],
     })
   }
 
@@ -34,7 +34,7 @@ export class gacha extends plugin {
 
     /** 生成图片 */
     await this.renderImg("genshin", "html/gacha/gacha-trial", data, {
-      recallMsg: data.nowFive >= 1 || data.nowFour >= 4 ? false : this.GachaData.set.delMsg
+      recallMsg: data.nowFive >= 1 || data.nowFour >= 4 ? false : this.GachaData.set.delMsg,
     })
   }
 

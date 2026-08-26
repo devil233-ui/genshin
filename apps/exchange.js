@@ -1,6 +1,6 @@
-import fetch from "node-fetch"
 import plugin from "../../../lib/plugins/plugin.js"
 import common from "../../../lib/common/common.js"
+import fetch from "node-fetch"
 import MysInfo from "../model/mys/mysInfo.js"
 
 export class exchange extends plugin {
@@ -9,29 +9,31 @@ export class exchange extends plugin {
       name: "兑换码",
       dsc: "前瞻直播兑换码",
       event: "message",
-      priority: 1000,
+      priority: -1000,
       rule: [
         {
           reg: /^(#|\*)?(原神|星铁|崩铁|崩三|崩坏三|崩坏3|绝区零)?(直播|前瞻)?兑换码$/,
-          fnc: "getCode"
+          fnc: "getCode",
         },
         {
           reg: "^#(原神|星铁|绝区零)?(兑换码使用|cdk-u).+",
-          fnc: "useCode"
-        }
-      ]
+          fnc: "useCode",
+        },
+      ],
     })
   }
 
   async getCode() {
-    let reg = this.e.msg.match(/^(#|\*)?(原神|星铁|崩铁|崩三|崩坏三|崩坏3|绝区零)?(直播|前瞻)?兑换码$/)
+    let reg = this.e.msg.match(
+      /^(#|\*)?(原神|星铁|崩铁|崩三|崩坏三|崩坏3|绝区零)?(直播|前瞻)?兑换码$/,
+    )
     this.uid = "75276539"
     this.gid = "2"
-    if (reg[1] == "*" || [ "星铁", "崩铁" ].includes(reg[2])) {
+    if (reg[1] == "*" || ["星铁", "崩铁"].includes(reg[2])) {
       this.uid = "80823548"
       this.gid = "6"
     }
-    if ([ "崩三", "崩坏三", "崩坏3" ].includes(reg[2])) {
+    if (["崩三", "崩坏三", "崩坏3"].includes(reg[2])) {
       this.uid = "73565430"
       this.gid = "1"
     }
@@ -64,8 +66,8 @@ export class exchange extends plugin {
     }
 
     let index_data = index.data.live
-    let title = index_data.title
-    this.code_ver = index_data.code_ver
+    let title = index_data["title"]
+    this.code_ver = index_data["code_ver"]
     if (index_data.remain > 0) {
       return await this.reply(`暂无${title}直播兑换码`, true)
     }
@@ -85,21 +87,24 @@ export class exchange extends plugin {
 
     for (let val of code.data.code_list) {
       if (val.code) {
-        codes.push([ val.code, segment.button([ { text: "兑换", callback: `#兑换码使用${val.code}` } ]) ])
+        codes.push([
+          val.code,
+          segment.button([{ text: "兑换", callback: `#兑换码使用${val.code}` }]),
+        ])
       }
     }
 
-    let msg = [ `兑换码过期时间: \n${time}`, ...codes ]
+    let msg = [`兑换码过期时间: \n${time}`, ...codes]
     msg = await common.makeForwardMsg(this.e, msg, `${title}-直播兑换码`)
     await this.reply(msg)
   }
 
   async getData(type) {
     let url = {
-      index: "https://api-takumi.mihoyo.com/event/miyolive/index",
+      index: `https://api-takumi.mihoyo.com/event/miyolive/index`,
       code: `https://api-takumi-static.mihoyo.com/event/miyolive/refreshCode?version=${this.code_ver}&time=${this.now}`,
       actId: `https://bbs-api.mihoyo.com/painter/api/user_instant/list?offset=0&size=20&uid=${this.uid}`,
-      nav: `https://bbs-api.miyoushe.com/apihub/api/home/new?gids=${this.gid}&parts=1%2C3%2C4`
+      nav: `https://bbs-api.miyoushe.com/apihub/api/home/new?gids=${this.gid}&parts=1%2C3%2C4`,
     }
 
     let response
@@ -107,8 +112,8 @@ export class exchange extends plugin {
       response = await fetch(url[type], {
         method: "get",
         headers: {
-          "x-rpc-act_id": this.actId
-        }
+          "x-rpc-act_id": this.actId,
+        },
       })
     } catch (error) {
       logger.error(error.toString())
@@ -151,7 +156,9 @@ export class exchange extends plugin {
         this.deadline = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} 12:00:00`
       }
       let structured_content = post.structured_content
-      let result = structured_content.match(/{"link":"https:\/\/webstatic.mihoyo.com\/bbs\/event\/live\/index.html\?act_id=(.*?)\\/)
+      let result = structured_content.match(
+        /{\"link\":\"https:\/\/webstatic.mihoyo.com\/bbs\/event\/live\/index.html\?act_id=(.*?)\\/,
+      )
       if (result) {
         return result[1]
       }
@@ -170,9 +177,8 @@ export class exchange extends plugin {
   async getBackupActId() {
     const res = await this.getData("nav")
     if (res.retcode !== 0) return null
-    const navMatch = res.data?.navigator?.find(item =>
-      item.name.match(/前瞻|特别节目/) &&
-      item.app_path.includes("act_id=")
+    const navMatch = res.data?.navigator?.find(
+      item => item.name.match(/前瞻|特别节目/) && item.app_path.includes("act_id="),
     )
 
     if (navMatch) {
@@ -185,7 +191,7 @@ export class exchange extends plugin {
     let code = await this.getData("code")
     let timestamp = code.data.code_list[0].to_get_time
     const date = new Date(timestamp * 1000)
-    const s = this.gid === "2" ? 3 : (this.gid === "1" || this.gid === "6") ? 1 : 2
+    const s = this.gid === "2" ? 3 : this.gid === "1" || this.gid === "6" ? 1 : 2
     date.setDate(date.getDate() + s)
     const y = date.getFullYear()
     const m = (date.getMonth() + 1).toString().padStart(2, "0")

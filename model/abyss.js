@@ -14,23 +14,23 @@ export default class Abyss extends base {
   async getCombat() {
     let ApiData = {
       index: "",
-      role_combat: ""
+      role_combat: "",
     }
 
-    let res = await MysInfo.get(this.e, ApiData, "");
-  
+    let res = await MysInfo.get(this.e, ApiData, "")
+
     /** 同步请求 */
-    this.e.apiSync = true;
-  
-    if (!res || res[0].retcode !== 0 || res[1].retcode !== 0) return false;
-  
+    this.e.apiSync = true
+
+    if (!res || res[0].retcode !== 0 || res[1].retcode !== 0) return false
+
     if (res[1].data.has_detail_data === "false") {
-      await this.e.reply(`uid${this.e.uid}，幻想真境剧诗数据还没更新，请稍后再试`);
-      return false;
+      await this.e.reply(`uid${this.e.uid}，幻想真境剧诗数据还没更新，请稍后再试`)
+      return false
     }
 
     let resIndex = res[0].data
-    let CombatData = res[1].data;
+    let CombatData = res[1].data
 
     let detail = CombatData.data[0].detail
     let stat = CombatData.data[0].stat
@@ -45,9 +45,9 @@ export default class Abyss extends base {
       detail,
       stat,
       schedule,
-    };
-  
-    return data;
+    }
+
+    return data
   }
 
   async getAbyss() {
@@ -58,7 +58,7 @@ export default class Abyss extends base {
 
     let ApiData = {
       index: "",
-      spiralAbyss: { schedule_type: scheduleType }
+      spiralAbyss: { schedule_type: scheduleType },
     }
 
     /** 同步请求 */
@@ -84,7 +84,7 @@ export default class Abyss extends base {
       name: this.e.sender.card,
       quality: 80,
       ...this.screenData,
-      ...this.abyssData(abyssData)
+      ...this.abyssData(abyssData),
     }
 
     return data
@@ -105,7 +105,7 @@ export default class Abyss extends base {
     }
     totalStar = totalStar + "（" + star.join("-") + "）"
 
-    let dataName = [ "damage", "take_damage", "defeat", "normal_skill", "energy_skill" ]
+    let dataName = ["damage", "take_damage", "defeat", "normal_skill", "energy_skill"]
     let rankData = []
 
     for (let val of dataName) {
@@ -113,8 +113,8 @@ export default class Abyss extends base {
         data[`${val}_rank`] = [
           {
             value: 0,
-            avatar_id: 10000007
-          }
+            avatar_id: 10000007,
+          },
         ]
       }
 
@@ -146,7 +146,7 @@ export default class Abyss extends base {
       total_star: totalStar,
       list: data.reveal_rank,
       total_battle_times: data.total_battle_times,
-      ...rankData
+      ...rankData,
     }
   }
 
@@ -159,7 +159,7 @@ export default class Abyss extends base {
     }
     let ApiData = {
       index: "",
-      spiralAbyss: { schedule_type: scheduleType }
+      spiralAbyss: { schedule_type: scheduleType },
     }
 
     /** 同步请求 */
@@ -196,7 +196,7 @@ export default class Abyss extends base {
       uid,
       floorIndex,
       ...this.screenData,
-      ...this.abyssFloorData(floors[floorIndex], resIndex)
+      ...this.abyssFloorData(floors[floorIndex], resIndex),
     }
   }
 
@@ -248,7 +248,8 @@ export default class Abyss extends base {
           let char = Character.get(val.battles[i].avatars[j].id)
           val.battles[i].avatars[j].name = char.abbr
           val.battles[i].avatars[j].icon = char.face
-          val.battles[i].avatars[j].life = roleArr[val.battles[i].avatars[j].id].actived_constellation_num
+          val.battles[i].avatars[j].life =
+            roleArr[val.battles[i].avatars[j].id].actived_constellation_num
         }
       }
       list.push(val)
@@ -256,7 +257,7 @@ export default class Abyss extends base {
 
     return {
       floor,
-      list
+      list,
     }
   }
 }

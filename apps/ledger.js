@@ -13,35 +13,37 @@ export class ledger extends plugin {
       rule: [
         {
           reg: "^(#原石|#*札记|#*(星铁)?星琼)([0-9]|[一二两三四五六七八九十]+)*月*$",
-          fnc: "ledger"
+          fnc: "ledger",
         },
         {
           reg: "^#(原石|(星铁)?星琼)任务$",
           permission: "master",
-          fnc: "ledgerTask"
+          fnc: "ledgerTask",
         },
         {
           reg: "^#*(原石|札记|(星铁)?星琼)统计$",
-          fnc: "ledgerCount"
+          fnc: "ledgerCount",
         },
         {
           reg: "^#*(去年|今年|\\d{4}年)(原石|札记|(星铁)?星琼)统计$",
-          fnc: "ledgerCountHistory"
-        }
-      ]
+          fnc: "ledgerCountHistory",
+        },
+      ],
     })
 
-    Object.defineProperty(this, "button", { get() {
-      this.prefix = this.e?.isSr ? "*星琼" : "#原石"
-      return segment.button([
-        { text: "记录", callback: this.prefix },
-        { text: "统计", callback: `${this.prefix}统计` },
-      ])
-    }})
+    Object.defineProperty(this, "button", {
+      get() {
+        this.prefix = this.e?.isSr ? "*星琼" : "#原石"
+        return segment.button([
+          { text: "记录", callback: this.prefix },
+          { text: "统计", callback: `${this.prefix}统计` },
+        ])
+      },
+    })
   }
 
   async init() {
-    let file = [ "./data/NoteData", "./data/SR_NoteData" ]
+    let file = ["./data/NoteData", "./data/SR_NoteData"]
     for (let i of file) {
       if (!fs.existsSync(i)) {
         fs.mkdirSync(i)
@@ -55,7 +57,12 @@ export class ledger extends plugin {
     if (!data) return
 
     /** 生成图片 */
-    this.reply([ await this.renderImg("genshin", `html/ledger/ledger-${data.game}`, data, { retType: "base64" }), this.button ])
+    this.reply([
+      await this.renderImg("genshin", `html/ledger/ledger-${data.game}`, data, {
+        retType: "base64",
+      }),
+      this.button,
+    ])
   }
 
   /** 原石任务 */
@@ -69,7 +76,12 @@ export class ledger extends plugin {
     if (!data) return
 
     /** 生成图片 */
-    this.reply([ await this.renderImg("genshin", `html/ledger/ledger-count-${data.game}`, data, { retType: "base64" }), this.button ])
+    this.reply([
+      await this.renderImg("genshin", `html/ledger/ledger-count-${data.game}`, data, {
+        retType: "base64",
+      }),
+      this.button,
+    ])
   }
 
   async ledgerCountHistory() {
@@ -77,6 +89,11 @@ export class ledger extends plugin {
     if (!data) return
 
     /** 生成图片 */
-    this.reply([ await this.renderImg("genshin", `html/ledger/ledger-count-${data.game}`, data, { retType: "base64" }), this.button ])
+    this.reply([
+      await this.renderImg("genshin", `html/ledger/ledger-count-${data.game}`, data, {
+        retType: "base64",
+      }),
+      this.button,
+    ])
   }
 }
