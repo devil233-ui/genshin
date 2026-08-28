@@ -171,7 +171,16 @@ export default class GachaLog extends base {
       return false
     }
     if (res.retcode == 400) {
-      await this.e.reply("获取数据错误")
+      const lines = ["获取数据错误：未能从米游社接口取得响应，链接本身可能是好的。"]
+      if (res.errHost) lines.push(`目标接口：${res.errHost}`)
+      if (res.errDetail) lines.push(`失败原因：${res.errDetail}`)
+      lines.push(
+        "常见原因：本机到该接口的 CDN 节点不可达或超时、DNS 解析到了坏节点、代理未生效。",
+        "可在服务器执行 curl -sv --max-time 10 https://" +
+          (res.errHost || "public-operation-hkrpg.mihoyo.com") +
+          "/ 复现，若卡在 Connected 之前即为网络不通，与抽卡链接无关。",
+      )
+      await this.e.reply(lines.join("\n"))
       return false
     }
     if (res.retcode == -100) {
@@ -246,11 +255,22 @@ export default class GachaLog extends base {
         ...param,
       }).toString()
     }
+    let host = ""
+    try {
+      host = new URL(logUrl).host
+    } catch {}
+    let fetchErr = ""
     let res = await fetch(logUrl + logParam).catch(err => {
-      logger.error(`[获取抽卡记录失败] ${err}`)
+      const code = err?.cause?.code || err?.code || ""
+      fetchErr = code ? `${code}（${err?.message || "请求失败"}）` : err?.message || String(err)
+      logger.error(`[获取抽卡记录失败] host=${host} ${err}`)
     })
-    if (!res || !res.ok) {
-      return { retcode: 400 }
+    if (!res) {
+      return { retcode: 400, errHost: host, errDetail: `网络请求失败：${fetchErr}` }
+    }
+    if (!res.ok) {
+      logger.error(`[获取抽卡记录失败] host=${host} HTTP ${res.status}`)
+      return { retcode: 400, errHost: host, errDetail: `接口返回 HTTP ${res.status} ${res.statusText || ""}`.trim() }
     }
     return await res.json()
   }
