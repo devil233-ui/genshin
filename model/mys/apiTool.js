@@ -62,6 +62,11 @@ export default class apiTool {
                 },
               },
             }),
+        /** 个人日历 */
+        act_calendar: {
+          url: `${hostRecord}game_record/app/genshin/api/act_calendar`,
+          body: { role_id: this.uid, server: this.server },
+        },
         /** 首页宝箱 */
         index: {
           url: `${hostRecord}game_record/app/genshin/api/index`,
