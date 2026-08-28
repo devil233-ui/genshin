@@ -256,6 +256,11 @@ export default class apiTool {
           url: `${hostRecord}game_record/app/hkrpg/api/note`,
           query: `role_id=${this.uid}&server=${this.server}`,
         },
+        // 日历
+        act_calendar: {
+          url: `${hostRecord}game_record/app/hkrpg/api/get_act_calender`,
+          query: `role_id=${this.uid}&server=${this.server}`,
+        },
         /** 养成计算器 */
         compute: {
           url: `${host}event/rpgcalc/compute?`,
