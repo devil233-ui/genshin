@@ -1,6 +1,8 @@
 import fs from "fs"
 import YAML from "yaml"
 import fetch from "node-fetch"
+import dns from "node:dns/promises"
+import https from "node:https"
 import lodash from "lodash"
 import puppeteer from "../../../lib/puppeteer/puppeteer.js"
 import common from "../../../lib/common/common.js"
@@ -680,23 +682,44 @@ export default class MysNews extends base {
   async getBbbActivity() {
     let bbbhd
     let fetchSuccess = false
+    let bbbNodes = []
+
+    try {
+      bbbNodes = (await dns.lookup("ann-api.mihoyo.com", { all: true, family: 4 })).map(
+        ({ address }) => address,
+      )
+    } catch (e) {
+      logger.warn(`[崩三API] 节点解析失败，改用系统默认解析：${e?.message || e}`)
+    }
 
     // 尝试请求最多 3 次，防止海外服务器连接国内直连节点超时抽风
     for (let i = 0; i < 3; i++) {
+      let address = bbbNodes[i % bbbNodes.length]
+      let agent = address
+        ? new https.Agent({
+            // 保持请求域名作为 SNI，只替换 TCP 连接地址
+            lookup: (_hostname, _options, callback) => callback(null, address, 4),
+          })
+        : undefined
       try {
         // node-fetch 支持直接传入 timeout 参数（单位毫秒）
         let res = await fetch(
           "https://ann-api.mihoyo.com/common/bh3_cn/announcement/api/getAnnList?game=bh3&game_biz=bh3_cn&lang=zh-cn&bundle_id=bh3_cn&channel_id=14&level=88&platform=pc&region=bb01&uid=100000000",
           {
             timeout: 8000, // 8秒连不上直接切断，进入重试
+            agent,
           },
         )
         bbbhd = await res.json()
         fetchSuccess = true
         break // 请求成功，立刻跳出重试循环
       } catch (e) {
-        logger.mark(`[网络波动] 崩三API 第 ${i + 1} 次请求超时，正在重试...`)
+        logger.mark(
+          `[网络波动] 崩三API 第 ${i + 1} 次请求超时（节点：${address || "系统解析"}），正在重试...`,
+        )
         await common.sleep(2000) // 延迟2秒后重试
+      } finally {
+        agent?.destroy()
       }
     }
 
