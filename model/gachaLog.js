@@ -41,6 +41,17 @@ export default class GachaLog extends base {
     this.pool = e.isSr ? srPool : gsPool
   }
 
+  /**
+   * 抽卡记录更新完成后的可用指令引导。
+   * 抽成静态方法供外部桥接（如 xiaoyao 的小程序同步链路）复用，避免文案两处维护。
+   */
+  static logGuide(e, uid) {
+    const isSr = e?.isSr
+    const p = isSr ? "*" : "#"
+    const game = isSr ? "崩铁" : "原神"
+    return `\nUID：${uid}抽卡记录更新完成，您还可回复以下（注：除【全部】和【导出】指令外，前缀后均可加【常驻】或【联动】）\n\n【${p}全部记录】统计${game}全部抽卡数据\n【${p}全部统计】卡池命座精炼数分布一览\n【${p}角色记录】统计${game}角色数据（算垫的）\n【${p}武器记录】统计${game}武器数据（算垫的）\n【${p}角色统计】按卡池统计${game}角色数据（不算垫的）\n【${p}武器统计】按卡池统计${game}武器数据（不算垫的）\n【${p}导出记录】导出记录数据\n【#设置全量更新抽卡记录开】用于修复在官方记录有效期内可能发生的数据错误(如出金抽数大于90)`
+  }
+
   static getIcon(name, type = "role", game = "") {
     if (type === "role" || type === "角色") {
       let char = Character.get(name, game)
@@ -85,12 +96,7 @@ export default class GachaLog extends base {
       if (i <= 1) await common.sleep(500)
     }
     MakeMsg.push(tmpMsg)
-    const isSr = this.e.isSr
-    const p = isSr ? "*" : "#"
-    const game = isSr ? "崩铁" : "原神"
-    MakeMsg.push(
-      `\nUID：${this.uid}抽卡记录更新完成，您还可回复以下（注：除【全部】和【导出】指令外，前缀后均可加【常驻】或【联动】）\n\n【${p}全部记录】统计${game}全部抽卡数据\n【${p}全部统计】卡池命座精炼数分布一览\n【${p}角色记录】统计${game}角色数据（算垫的）\n【${p}武器记录】统计${game}武器数据（算垫的）\n【${p}角色统计】按卡池统计${game}角色数据（不算垫的）\n【${p}武器统计】按卡池统计${game}武器数据（不算垫的）\n【${p}导出记录】导出记录数据\n【#设置全量更新抽卡记录开】用于修复在官方记录有效期内可能发生的数据错误(如出金抽数大于90)`,
-    )
+    MakeMsg.push(GachaLog.logGuide(this.e, this.uid))
     await this.e.reply(MakeMsg)
 
     if (this.fetchFullLog) {
