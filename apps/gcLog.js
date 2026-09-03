@@ -173,7 +173,8 @@ export class gcLog extends plugin {
 2.导入本地文件：发送https://uigf.org/zh/ 标准json
 
 【崩坏：星穹铁道】
-1.官方未公开接口，不能直接更新记录，需要自己提取。可使用以下方式获取链接后私发bot：
+1.只看五星可以直接发送【*更新抽卡记录】
+1.5.含四星的完整记录官方未公开接口，不能直接更新记录，需要自己提取。可使用以下方式获取链接后私发bot：
 
 手机软件：
 https://www.wyylkjs.top/HoYoGet/
@@ -191,13 +192,15 @@ https://github.com/Scighost/Starward
 【绝区零】
 1.发送【%更新抽卡记录】，等待获取后发送【%抽卡记录】
 2.导入本地文件：%导入记录，然后发送https://uigf.org/zh/ 标准json
+
+【崩坏3】
+发送【刷新抽卡记录】
 `
-    let textMessage2 = `    
-【记录帮助-安卓】
-同上      
+    let textMessage2 = `
+以下仅为提取链接方案参考的整理，在如今接口时代基本可以归档归档了    
     
-【记录帮助-苹果】
-- 苹果手机需要用捉包获取 历史记录页面链接 
+【苹果手机】
+- 需要用捉包获取 历史记录页面链接 
 - 应用商店搜索抓包工具 Stream ，下载安装
 - 打开 Stream ，允许 添加VPN配置 ，安装 CA证书 
 - 点左上角 开始捉包 按钮
@@ -206,11 +209,11 @@ https://github.com/Scighost/Starward
 - 点右边 抓包历史 按钮，选择最上面一条
 - 选择 按域名 ，选择域名为  hk4e-api.mihoyo.com  那一条
 - 点最上面一条，选择 请求 ，点击 请求信息 
--  复制请求连接 ，最后 私聊 发送给机器人
+- 复制请求连接 ，最后 私聊 发送给机器人
     
-【记录帮助-电脑】
+【电脑】
 
-【快捷】原神    PC端获取方法1：
+原神    方法1：
     1.打开原神祈愿页面→ 历史记录 保持不动
     2.然后按 win + r 键
     3.输入：
@@ -219,7 +222,7 @@ powershell iex(irm 'https://gitee.com/storyc/halo-file/raw/master/gsLink-amwz.ps
 
     4.抽卡分析的链接就在剪贴板了，粘贴即可
 
-原神    PC端获取方法2：
+原神    方法2：
     1.在原神PC端按下ESC-->祈愿-->历史记录，成功进入到如下页面（建议多翻几页）
     2.在桌面按下“Win+R”打开运行，输入\n“   powershell  ”  点击确定
     3.在弹出的程序框中再输入代码： 
@@ -232,7 +235,7 @@ powershell iex(irm 'https://gitee.com/storyc/halo-file/raw/master/gsLink-amwz.ps
 
     4.点击确定后，抽卡分析的链接就会自动复制到剪贴板了，按Ctrl+V即可粘贴
 
-【快捷】崩坏：星穹铁道   PC端获取方法1：
+崩坏：星穹铁道   方法1：
     1.打开星穹铁道祈愿页面 ->历史记录，多翻几页
     2.然后按 win + r 键
     3.输入：
@@ -241,7 +244,7 @@ powershell iex(irm 'https://gitee.com/storyc/halo-file/raw/master/gsLink-amwz.ps
 （没试过国际服）
     4.抽卡分析的链接就在剪贴板了，粘贴即可
 
-崩坏：星穹铁道   PC端获取方法2：
+崩坏：星穹铁道   方法2：
     1.打开星穹铁道祈愿页面 ->历史记录，多翻几页
     2.回到桌面，按win+r键 输入：  powershell
     3.在弹出的命令窗口输入以下命令：
@@ -252,7 +255,7 @@ powershell iex(irm 'https://gitee.com/storyc/halo-file/raw/master/gsLink-amwz.ps
 
     4.复制抽卡分析链接即可
 
-【快捷】绝区零   PC端获取方法1：
+绝区零
     1.打开绝区零调频页面→详情→ 调频记录 保持不动
     2.然后按 win + r 键
     3.输入：

@@ -454,7 +454,7 @@ export default class MysNews extends base {
       })
     }
 
-    logger.mark(`[调试] 准备推送的总活动数量: ${ActivityList.length}`)
+    logger.debug(`[调试] 准备推送的总活动数量: ${ActivityList.length}`)
     if (ActivityList.length === 0) return
 
     // 安全合并需要推送的机器ID和群组
@@ -479,7 +479,7 @@ export default class MysNews extends base {
       BotidList.push(botId)
     }
 
-    logger.mark(`[调试] 当前开启了推送配置的Bot: ${BotidList.join(", ")}`)
+    logger.debug(`[调试] 当前开启了推送配置的Bot: ${BotidList.join(", ")}`)
 
     let date = await this.getDate()
 
@@ -496,7 +496,7 @@ export default class MysNews extends base {
       }
 
       if (!botInstance) {
-        logger.mark(`[调试] 警告：无法获取 Bot[${botId}] 实例，已跳过。`)
+        logger.debug(`[调试] 警告：无法获取 Bot[${botId}] 实例，已跳过。`)
         continue
       }
 
@@ -508,7 +508,7 @@ export default class MysNews extends base {
         let pushSuccessCount = 0
         let shouldBreak = false // 记录本轮是否发过消息
 
-        logger.mark(`[调试] 开始检查群 ${groupId} 需要推送的游戏...`)
+        logger.debug(`[调试] 开始检查群 ${groupId} 需要推送的游戏...`)
 
         for (let a of ActivityList) {
           // 【核心优化】把 Redis 缓存精确到单独的游戏： Yz:apgl:游戏简称:Bot号:群号
@@ -564,7 +564,7 @@ export default class MysNews extends base {
         }
 
         if (pushSuccessCount === 0) {
-          logger.mark(`[调试] 群 ${groupId} 没有需要推送的新活动`)
+          logger.debug(`[调试] 群 ${groupId} 没有需要推送的新活动`)
         }
 
         if (shouldBreak) {
